@@ -19,7 +19,7 @@ class SecondVC: UIViewController {
 	however in Objective-C this is required,
 	so it'd be like this:
 
-	int counter = 0
+	int counter = 0;
 
 	---*/
 
@@ -178,7 +178,7 @@ class SecondVC: UIViewController {
 
 		}
 
-		if counter == 15 {
+		else if counter == 15 {
 
 			Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(fadeOut), userInfo: nil, repeats: false)
 
