@@ -38,7 +38,7 @@ class SecondVC: UIViewController {
 		// customize our navigation bar color
 
 		/*--- the ? means navigationController is an optional,
-		meaning it couldve have a nil value, so in this case
+		meaning it couldve a nil value, so in this case
 		this is called optional chaining, which is safer than
 		force unwrapping (using a ! instead), because if it were
 		to be nil and we force unwrap, the app would crash ---*/
