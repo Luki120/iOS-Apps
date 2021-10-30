@@ -1,7 +1,7 @@
 import UIKit
 
 
-class TabBarVC : UITabBarController, UITabBarControllerDelegate {
+class TabBarVC : UITabBarController {
 
 	override func viewDidLoad() {
 
@@ -34,15 +34,6 @@ class TabBarVC : UITabBarController, UITabBarControllerDelegate {
 		// get rid of the border line
 
 		tabBar.layer.borderWidth = 0
-		tabBar.layer.borderColor = UIColor.clear.cgColor
-
-	}
-
-	// delegate method
-
-	func tabBarController(_ tabBarController: UITabBarController, shouldSelect viewController: UIViewController) -> Bool {
-
-		return true;
 
 	}
 
