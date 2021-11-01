@@ -1,11 +1,6 @@
 #import "FirstVC.h"
 
 
-@interface FirstVC ()
-@property (nonatomic, strong) UIButton *magicButton;
-@end
-
-
 @implementation FirstVC
 
 
@@ -16,9 +11,10 @@
 	self.magicButton = [UIButton new];
 	self.magicButton.titleLabel.font = [UIFont systemFontOfSize:15];
 	self.magicButton.backgroundColor = UIColor.systemIndigoColor;
+	self.magicButton.layer.cornerCurve = kCACornerCurveContinuous;
 	self.magicButton.layer.cornerRadius = 20;
 	self.magicButton.translatesAutoresizingMaskIntoConstraints = NO;
-	[self.magicButton setTitle : @"Tap me and watch the magic on the other side" forState:UIControlStateNormal];
+	[self.magicButton setTitle : @"Tap me and switch tabs to see magic" forState:UIControlStateNormal];
 	[self.magicButton addTarget : self action:@selector(notificationSender:) forControlEvents:UIControlEventTouchUpInside];
 	[self.view addSubview:self.magicButton];
 

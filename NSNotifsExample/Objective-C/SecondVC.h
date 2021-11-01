@@ -1,8 +1,7 @@
 @import UIKit;
 
 
-int counter;
-
-
 @interface SecondVC : UIViewController
+@property (nonatomic, strong) UILabel *hiddenLabel;
+@property (nonatomic, strong) UITextField *textField;
 @end

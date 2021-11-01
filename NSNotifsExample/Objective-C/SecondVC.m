@@ -1,13 +1,11 @@
 #import "SecondVC.h"
 
 
-@interface SecondVC ()
-@property (nonatomic, strong) UILabel *hiddenLabel;
-@property (nonatomic, strong) UITextField *textField;
-@end
+@implementation SecondVC {
 
+	int counter;
 
-@implementation SecondVC
+}
 
 
 - (void)viewDidLoad {
@@ -20,6 +18,8 @@
 	self.textField.enabled = NO;
 	self.textField.placeholder = @":peek:";
 	self.textField.textAlignment = NSTextAlignmentCenter;
+	self.textField.layer.cornerCurve = kCACornerCurveContinuous;
+	self.textField.layer.cornerRadius = 20;
 	self.textField.translatesAutoresizingMaskIntoConstraints = NO;
 	[self.view addSubview:self.textField];
 
@@ -97,7 +97,7 @@
 
 - (void)fadeIn { // we do a little playing with UIKit
 
-	[UIView animateWithDuration:1.5 delay:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+	[UIView animateWithDuration:0.5 delay:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
 
 		self.hiddenLabel.alpha = 1;
 
@@ -108,7 +108,7 @@
 
 - (void)fadeOut {
 
-	[UIView animateWithDuration:1.5 delay:0.5 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+	[UIView animateWithDuration:0.5 delay:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
 
 		self.hiddenLabel.alpha = 0;
 

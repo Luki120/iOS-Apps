@@ -1,10 +1,6 @@
 #import "NSRootVC.h"
 
 
-@interface NSRootVC ()
-@end
-
-
 @implementation NSRootVC
 
 
@@ -16,12 +12,18 @@
 
 		FirstVC *firstVC = [FirstVC new];
 		SecondVC *secondVC = [SecondVC new];
-		NSArray *tabBarControllers = @[firstVC, secondVC];
-		self.selectedIndex = 0;
-		self.viewControllers = tabBarControllers;
 
-		firstVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Home" image:[UIImage systemImageNamed:@"bolt.horizontal.fill"] tag:0];
-		secondVC.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Not Home" image:[UIImage systemImageNamed:@"bonjour"] tag:1];
+		firstVC.title = @"Home";
+		secondVC.title = @"Not Home";
+
+		UINavigationController *firstNav = [[UINavigationController alloc] initWithRootViewController:firstVC];
+		UINavigationController *secondNav = [[UINavigationController alloc] initWithRootViewController:secondVC];
+
+		firstNav.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Home" image:[UIImage systemImageNamed:@"bolt.horizontal.fill"] tag:0];
+		secondNav.tabBarItem = [[UITabBarItem alloc] initWithTitle:@"Not Home" image:[UIImage systemImageNamed:@"bonjour"] tag:1];
+
+		NSArray *tabBarControllers = @[firstNav, secondNav];
+		self.viewControllers = tabBarControllers;
 
 	}
 
