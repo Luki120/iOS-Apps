@@ -35,32 +35,16 @@ class SecondVC: UIViewController {
 
 		super.viewDidLoad() // call the original implementation of viewDidLoad()
 
-		// customize our navigation bar color
-
-		/*--- the ? means navigationController is an optional,
-		meaning it couldve a nil value, so in this case
-		this is called optional chaining, which is safer than
-		force unwrapping (using a ! instead), because if it were
-		to be nil and we force unwrap, the app would crash ---*/
-
-		// nav bar color
-
-		navigationController?.navigationBar.barTintColor = UIColor.black
-		navigationController?.navigationBar.isTranslucent = false
-
-		// get rid of the border (the gray line)
-
-		navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-		navigationController?.navigationBar.shadowImage = UIImage()
-
 		// Create our text field
 
 		textField = UITextField()
 		textField.isEnabled = false
 		textField.placeholder = ":peek:"
 		textField.textAlignment = .center
+		textField.layer.cornerCurve = .continuous
+		textField.layer.cornerRadius = 20
 		textField.translatesAutoresizingMaskIntoConstraints = false
-		self.view.addSubview(textField)
+		view.addSubview(textField)
 
 		// create our label
 
@@ -72,9 +56,11 @@ class SecondVC: UIViewController {
 		hiddenLabel.textAlignment = .center
 		hiddenLabel.numberOfLines = 0
 		hiddenLabel.translatesAutoresizingMaskIntoConstraints = false
-		self.view.addSubview(hiddenLabel)
+		view.addSubview(hiddenLabel)
 
-		setupLayout() // call our setupLayout function
+		// call our setupLayout method, yes it's called method here because it's within the scope of our class
+
+		setupLayout()
 
 		/*--- create notifications observers, aka the magic :fr:
 		observers are listeners, they'll be waiting and listening in this case
@@ -100,7 +86,7 @@ class SecondVC: UIViewController {
 		let views = [
 		
 			"textField": textField,
-			"superview": self.view!
+			"superview": view!
 		
 		]
 
@@ -142,7 +128,7 @@ class SecondVC: UIViewController {
 
 	}
 
-	// random color function
+	// random color method
 	// https://stackoverflow.com/questions/33882130/button-that-will-generate-a-random-background-color-xcode-swift
 
 	private func randomCGFloat() -> CGFloat {
@@ -166,8 +152,8 @@ class SecondVC: UIViewController {
 
 		// cast our counter value to a string, since it's an integer
 
-		self.textField.text = String(counter)
-		self.textField.backgroundColor = UIColor(red: r, green: g, blue: b, alpha: 1.0)
+		textField.text = String(counter)
+		textField.backgroundColor = UIColor(red: r, green: g, blue: b, alpha: 1.0)
 
 		/*--- start one second timers when the conditions are met to wait 
 		and then start cross dissolving the labels' alpha from 0 to 1 and viceversa ---*/
@@ -189,6 +175,10 @@ class SecondVC: UIViewController {
 	@objc private func fadeIn() {
 
 		UIView.animate(withDuration: 0.5, delay: 0.3, options: UIView.AnimationOptions.transitionCrossDissolve, animations: { () -> Void in
+
+			/*--- unlike Objective-C, where you need the keyword self
+			to access properties, Swift has very rare few cases for it,
+			and this is one of them because it's in a closure ---*/
 
 			self.hiddenLabel.alpha = 1
 
