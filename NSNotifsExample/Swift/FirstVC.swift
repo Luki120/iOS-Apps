@@ -12,28 +12,21 @@ class FirstVC: UIViewController {
 
 		super.viewDidLoad() // call the original implementation of viewDidLoad()
 
-		// nav bar color
-
-		navigationController?.navigationBar.barTintColor = UIColor.black
-		navigationController?.navigationBar.isTranslucent = false
-
-		// get rid of the border (the gray line)
-
-		navigationController?.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-		navigationController?.navigationBar.shadowImage = UIImage()
-
 		// create our button
 
 		magicButton = UIButton()
-		magicButton.setTitle("Tap me and watch the magic on the other side", for: .normal)
+		magicButton.setTitle("Tap me and switch tabs to see magic", for: .normal)
 		magicButton.titleLabel!.font = UIFont.systemFont(ofSize: 15)
 		magicButton.backgroundColor = .systemIndigo
+		magicButton.layer.cornerCurve = .continuous
 		magicButton.layer.cornerRadius = 20
 		magicButton.translatesAutoresizingMaskIntoConstraints = false
-		magicButton.addTarget(self, action:#selector(self.notificationSender), for: .touchUpInside)
+		magicButton.addTarget(self, action:#selector(notificationSender), for: .touchUpInside)
 		view.addSubview(magicButton)
 
-		setupLayout() // call our setupLayout function
+		// call our setupLayout method, yes it's called method here because it's within the scope of our class
+
+		setupLayout()
 
 	}
 
@@ -41,10 +34,10 @@ class FirstVC: UIViewController {
 
 		// proper UI layout
 
-		self.magicButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-		self.magicButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-		self.magicButton.widthAnchor.constraint(equalToConstant: 280).isActive = true
-		self.magicButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+		magicButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+		magicButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+		magicButton.widthAnchor.constraint(equalToConstant: 280).isActive = true
+		magicButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
 
 	}
 
