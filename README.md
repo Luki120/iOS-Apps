@@ -2,7 +2,7 @@
 
 ## Cora
 
-* Shows your device's uptime in less clicks. No need to open terminal or go through clunk menus anymore, just launch the app from your HomeScreen. It works by running the shell command you'd otherwise type yourself. Additionally, you can choose to show some more device specific information.
+* Shows your device's uptime in less clicks. No need to open terminal or go through clunky menus anymore, just launch the app from your HomeScreen. It works by running the shell command you'd otherwise type yourself. Additionally, you can choose to show some more device specific information.
 
 ## NSNotifExample
 
