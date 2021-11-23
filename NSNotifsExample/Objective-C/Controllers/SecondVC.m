@@ -125,8 +125,6 @@
 
 	counter++;
 
-	// https://stackoverflow.com/questions/21130433/generate-a-random-uicolor
-
 	textField.text = [NSString stringWithFormat:@"%d", counter];
 	textField.backgroundColor = [UIColor randomColor];
 
