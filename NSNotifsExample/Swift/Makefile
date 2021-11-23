@@ -4,7 +4,7 @@ INSTALL_TARGET_PROCESSES = NSNotifExampleSwift
 
 APPLICATION_NAME = NSNotifExampleSwift
 
-NSNotifExampleSwift_FILES = AppDelegate.swift TabBarVC.swift FirstVC.swift SecondVC.swift
+NSNotifExampleSwift_FILES = Core/AppDelegate.swift Controllers/FirstVC.swift Controllers/SecondVC.swift Controllers/TabBarVC.swift Extensions/Extensions.swift
 NSNotifExampleSwift_FRAMEWORKS = UIKit CoreGraphics
 
 include $(THEOS)/makefiles/common.mk

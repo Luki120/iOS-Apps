@@ -1,5 +1,5 @@
 #import "NSAppDelegate.h"
-#import "NSRootVC.h"
+#import "Controllers/NSRootVC.h"
 
 
 @implementation NSAppDelegate

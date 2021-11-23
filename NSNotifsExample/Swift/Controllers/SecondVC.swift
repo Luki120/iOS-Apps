@@ -1,7 +1,7 @@
 import UIKit
 
 
-class SecondVC: UIViewController {
+final class SecondVC: UIViewController {
 
 	/*--- these look like variables but they really aren't.
 	Since they are declared within the context of our class
@@ -23,20 +23,13 @@ class SecondVC: UIViewController {
 
 	---*/
 
-	var counter = 0
+	private var counter = 0
 
 	/*--- instantiate UITextField and UILabel so we can access all 
 	of it's properties and create our views ---*/
 
-	var textField = UITextField()
-	var hiddenLabel = UILabel()
-
-	override func viewDidLoad() {
-
-		super.viewDidLoad() // call the original implementation of viewDidLoad()
-
-		// Create our text field
-
+	private let textField: UITextField = {
+		var textField = UITextField()
 		textField = UITextField()
 		textField.isEnabled = false
 		textField.placeholder = ":peek:"
@@ -44,23 +37,34 @@ class SecondVC: UIViewController {
 		textField.layer.cornerCurve = .continuous
 		textField.layer.cornerRadius = 20
 		textField.translatesAutoresizingMaskIntoConstraints = false
-		view.addSubview(textField)
+		return textField
+	}()
 
-		// create our label
+	private let hiddenLabel: UILabel = {
+		let label = UILabel()
+		label.text = "The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff"
+		label.font = UIFont.systemFont(ofSize:18)
+		label.alpha = 0
+		label.textColor = .systemPurple
+		label.textAlignment = .center
+		label.numberOfLines = 0
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
+	}()
 
-		hiddenLabel = UILabel()
-		hiddenLabel.text = "The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff"
-		hiddenLabel.font = UIFont.systemFont(ofSize:18)
-		hiddenLabel.alpha = 0
-		hiddenLabel.textColor = .systemPurple
-		hiddenLabel.textAlignment = .center
-		hiddenLabel.numberOfLines = 0
-		hiddenLabel.translatesAutoresizingMaskIntoConstraints = false
-		view.addSubview(hiddenLabel)
+	required init?(coder aDecoder: NSCoder) {
 
-		// call our setupLayout method, yes it's called method here because it's within the scope of our class
+		super.init(coder: aDecoder)
 
-		setupLayout()
+	}
+
+	init() {
+
+		super.init(nibName: nil, bundle: nil)
+
+		// call our setupUI method, yes it's called method here because it's within the scope of our class
+
+		setupUI()
 
 		/*--- create notifications observers, aka the magic :fr:
 		observers are listeners, they'll be waiting and listening in this case
@@ -76,9 +80,42 @@ class SecondVC: UIViewController {
 
 	}
 
-	private func setupLayout() {
+	override func viewDidLoad() {
+
+		super.viewDidLoad()
+
+		// Do any additional setup after loading the view, typically from a nib.
+
+		view.backgroundColor = .systemBackground
+
+	}
+
+	override func viewDidLayoutSubviews() {
+
+		super.viewDidLayoutSubviews()
+
+		layoutUI()
+
+	}
+
+	private func setupUI() {
+
+		view.addSubview(textField)
+		view.addSubview(hiddenLabel)
+
+	}
+
+	private func layoutUI() {
+
+		let safeInsetsBottom = view.safeAreaInsets.bottom
 
 		// proper UILayout
+
+		// gotta unwrap view first
+
+		guard let view = view else {
+			return
+		}
 
 		/*--- our dictionary which contains the views
 		we want to constrain ---*/
@@ -86,9 +123,31 @@ class SecondVC: UIViewController {
 		let views = [
 		
 			"textField": textField,
-			"superview": view!
+			"hiddenLabel": hiddenLabel,
+			"superview": view
 		
 		]
+
+		let formatTextFieldWidth = "H:[textField(==150)]"
+		let formatTextFieldHeight = "V:[textField(==40)]"
+		let formatTextFieldCenterX = "V:[superview]-(<=1)-[textField]"
+		let formatTextFieldCenterY = "H:[superview]-(<=1)-[textField]"
+
+		let formatLabelBottom = "V:[hiddenLabel]-\(safeInsetsBottom + 15)-|"
+		let formatLabelCenterX = "V:[superview]-(<=1)-[hiddenLabel]"
+		let formatLabelLeadingTrailing = "H:|-10-[hiddenLabel]-10-|"
+
+		let widthConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldWidth, options: [], metrics: nil, views: views)
+		let heightConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldHeight, options: [], metrics: nil, views: views)
+		let centerXConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldCenterX, options: .alignAllCenterX, metrics: nil, views: views)
+		let centerYConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldCenterY, options: .alignAllCenterY, metrics: nil, views: views)
+
+		let labelBottomConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatLabelBottom, options: [], metrics: nil, views: views)
+		let labelCenterXConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatLabelCenterX, options: .alignAllCenterX, metrics: nil, views: views)
+		let labelLeadingTrailingConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatLabelLeadingTrailing, options: .alignAllCenterX, metrics: nil, views: views)
+
+		view.addConstraints(widthConstraint + heightConstraint + centerXConstraint + centerYConstraint)
+		view.addConstraints(labelBottomConstraint + labelCenterXConstraint + labelLeadingTrailingConstraint)
 
 		/*--- Understanding Visual Format Language syntax:
 
@@ -106,35 +165,6 @@ class SecondVC: UIViewController {
 
 		// credits: https://stackoverflow.com/a/54049893
 
-		let formatWidth = "H:[textField(==150)]"
-		let formatHeight = "V:[textField(==40)]"
-		let formatCenterX = "V:[superview]-(<=1)-[textField]"
-		let formatCenterY = "H:[superview]-(<=1)-[textField]"
-
-		let widthConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatWidth, options: NSLayoutConstraint.FormatOptions(rawValue: 0), metrics: nil, views: views)
-		let heightConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatHeight, options: NSLayoutConstraint.FormatOptions(rawValue: 0), metrics: nil, views: views)
-		let centerXConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatCenterX, options: .alignAllCenterX, metrics: nil, views: views)
-		let centerYConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatCenterY, options: .alignAllCenterY, metrics: nil, views: views)
-
-		NSLayoutConstraint.activate(widthConstraint)
-		NSLayoutConstraint.activate(heightConstraint)
-		NSLayoutConstraint.activate(centerXConstraint)
-		NSLayoutConstraint.activate(centerYConstraint)
-
-		hiddenLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-		hiddenLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant : -15).isActive = true
-		hiddenLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant : 10).isActive = true
-		hiddenLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant : -10).isActive = true
-
-	}
-
-	// random color method
-	// https://stackoverflow.com/questions/33882130/button-that-will-generate-a-random-background-color-xcode-swift
-
-	private func randomCGFloat() -> CGFloat {
-
-		return CGFloat(arc4random()) / CGFloat(UInt32.max)
-
 	}
 
 	/*--- we use @objc because "selector" is an Objective-C concept only,
@@ -146,14 +176,10 @@ class SecondVC: UIViewController {
 
 		counter += 1
 
-		let r = randomCGFloat()
-		let g = randomCGFloat()
-		let b = randomCGFloat()
-
 		// cast our counter value to a string, since it's an integer
 
 		textField.text = String(counter)
-		textField.backgroundColor = UIColor(red: r, green: g, blue: b, alpha: 1.0)
+		textField.backgroundColor = UIColor.randomColor()
 
 		/*--- start one second timers when the conditions are met to wait 
 		and then start cross dissolving the labels' alpha from 0 to 1 and viceversa ---*/

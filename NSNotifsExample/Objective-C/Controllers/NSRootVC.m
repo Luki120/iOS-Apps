@@ -4,11 +4,13 @@
 @implementation NSRootVC
 
 
-- (id)init {
-
-	self = [super init];
-
+- (id)initWithNibName:(NSString *)aNib bundle:(NSBundle *)aBundle {
+	
+	self = [super initWithNibName:aNib bundle:aBundle];
+	
 	if(self) {
+		
+		// Custom initialization
 
 		FirstVC *firstVC = [FirstVC new];
 		SecondVC *secondVC = [SecondVC new];
@@ -36,15 +38,15 @@
 
 	[super viewDidLoad];
 
-	// customization
+	// Do any additional setup after loading the view, typically from a nib.
 
-	UINavigationBar.appearance.translucent = NO;
-	UINavigationBar.appearance.shadowImage = [UIImage new];
-	UINavigationBar.appearance.barTintColor = UIColor.blackColor;
+	UIImage *image = [UIImage new];
+	UINavigationBar.appearance.shadowImage = image;
+	[UINavigationBar.appearance setBackgroundImage: image forBarMetrics: UIBarMetricsDefault];
 
 	self.tabBar.tintColor = UIColor.systemPurpleColor;
 	self.tabBar.translucent = NO;
-	self.tabBar.barTintColor = UIColor.blackColor;
+	self.tabBar.barTintColor = UIColor.systemBackgroundColor;
 
 	self.tabBar.clipsToBounds = YES;
 	self.tabBar.layer.borderWidth = 0;
