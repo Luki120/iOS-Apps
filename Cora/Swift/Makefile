@@ -1,13 +1,13 @@
 ARCHS = arm64 arm64e
 TARGET = iphone:clang:latest:latest
-INSTALL_TARGET_PROCESSES = CoraSwift
+INSTALL_TARGET_PROCESSES = Cora
 
-APPLICATION_NAME = CoraSwift
+APPLICATION_NAME = Cora
 
-CoraSwift_FILES = Core/AppDelegate.swift Controllers/SettingsVC.swift Controllers/UPTRootVC.swift Managers/ColorManager.swift Managers/GlobalManager.swift Managers/UserDefaultsManager.swift Managers/TaskManager.swift
-CoraSwift_FRAMEWORKS = UIKit CoreGraphics
-CoraSwift_CODESIGN_FLAGS = -Sentitlements.plist
-CoraSwift_SWIFT_BRIDGING_HEADER = Bridging-Headers/CoraSwift-Bridging-Header.h
+Cora_FILES = Core/AppDelegate.swift Controllers/SettingsVC.swift Controllers/UPTRootVC.swift Managers/ColorManager.swift Managers/GlobalManager.swift Managers/UserDefaultsManager.swift Managers/TaskManager.swift
+Cora_FRAMEWORKS = UIKit CoreGraphics
+Cora_CODESIGN_FLAGS = -Sentitlements.plist
+Cora_SWIFT_BRIDGING_HEADER = Bridging-Headers/Cora-Bridging-Header.h
 
 include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/application.mk
