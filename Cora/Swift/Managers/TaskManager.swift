@@ -6,16 +6,14 @@ final class TaskManager {
 	static let sharedInstance = TaskManager()
 	var darwinString: String?
 	var uptimeString: String?
-
-	let userDefaultsManager = UserDefaultsManager.sharedInstance
 	
 	private init() {}
 	
 	func launchDarwinTask() {
 
-		userDefaultsManager.loadSwitchState()
+		UserDefaultsManager.sharedInstance.loadSwitchState()
 
-		guard let switchState = userDefaultsManager.switchState else {
+		guard let switchState = UserDefaultsManager.sharedInstance.switchState else {
 			return
 		}
 

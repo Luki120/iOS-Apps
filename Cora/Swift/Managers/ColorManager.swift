@@ -18,10 +18,10 @@ final class ColorManager {
 			UserDefaults.standard.register(defaults: defaultAccentColor)
 
 		}
-
+ 
 		catch {
 
-			print("handling the fucking error so this shit lets me compile")
+			print("handling the fucking error so this shit lets me compile, \(error)")
 			return
 
 		}

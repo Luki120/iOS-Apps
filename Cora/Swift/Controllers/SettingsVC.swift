@@ -5,11 +5,8 @@ import SafariServices
 final class SettingsVC: UITableViewController {
 
 	private let cellIdentifier = "cell"
-	let colorManager = ColorManager.sharedInstance
-	let globalManager = GlobalManager.sharedInstance
-	let userDefaultsManager = UserDefaultsManager.sharedInstance
 
-	let uptRootVC = UPTRootVC()
+	private let uptRootVC = UPTRootVC()
 
 	private let accentLabel: UILabel = {
 		let label = UILabel()
@@ -75,10 +72,7 @@ final class SettingsVC: UITableViewController {
 		return label
 	}()
 
-	let colorPicker: UIColorPickerViewController = {
-		let picker = UIColorPickerViewController()
-		return picker
-	}()
+	private let colorPicker = UIColorPickerViewController()
 
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
@@ -88,11 +82,11 @@ final class SettingsVC: UITableViewController {
 
 		super.init(nibName: nil, bundle: nil)
 
-		userDefaultsManager.loadAccentColor()
+		UserDefaultsManager.sharedInstance.loadAccentColor()
 
 		tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
 
-		globalManager.commandSwitch.addTarget(self, action: #selector(switchStateChanged), for: .valueChanged)
+		GlobalManager.sharedInstance.commandSwitch.addTarget(self, action: #selector(switchStateChanged), for: .valueChanged)
 
 		setupUI()
 		setupPicker()
@@ -102,7 +96,7 @@ final class SettingsVC: UITableViewController {
 	override func viewWillAppear(_ animated: Bool) {
 
 		super.viewWillAppear(animated)
-		userDefaultsManager.setSwitchState()
+		UserDefaultsManager.sharedInstance.setSwitchState()
 
 	}
 
@@ -116,14 +110,14 @@ final class SettingsVC: UITableViewController {
 
 	private func setupUI() {
 
-		darwinLabel.textColor = colorManager.accentColor
-		globalManager.commandSwitch.onTintColor = colorManager.accentColor
+		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
+		GlobalManager.sharedInstance.commandSwitch.onTintColor = ColorManager.sharedInstance.accentColor
 
-		accentLabel.textColor = colorManager.accentColor
-		indicatorShapeLayer.fillColor = colorManager.accentColor.cgColor
+		accentLabel.textColor = ColorManager.sharedInstance.accentColor
+		indicatorShapeLayer.fillColor = ColorManager.sharedInstance.accentColor.cgColor
 
-		sourceCodeButton.setTitleColor(colorManager.accentColor, for: .normal)
-		copyrightLabel.textColor = colorManager.accentColor
+		sourceCodeButton.setTitleColor(ColorManager.sharedInstance.accentColor, for: .normal)
+		copyrightLabel.textColor = ColorManager.sharedInstance.accentColor
 
 		view.backgroundColor = .black
 		tableView.separatorStyle = .none
@@ -133,14 +127,14 @@ final class SettingsVC: UITableViewController {
 	private func setupPicker() {
 
 		colorPicker.delegate = self
-		colorPicker.selectedColor = colorManager.accentColor
+		colorPicker.selectedColor = ColorManager.sharedInstance.accentColor
 		colorPicker.modalPresentationStyle = .popover
 
 	}
 
 	@objc private func switchStateChanged() {
 
-		userDefaultsManager.saveSwitchState()
+		UserDefaultsManager.sharedInstance.saveSwitchState()
 
 		NotificationCenter.default.post(name: Notification.Name("launchChosenTask"), object: nil)
 
@@ -156,7 +150,7 @@ final class SettingsVC: UITableViewController {
 
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-		let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+		let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
 
 		cell.selectionStyle = .none
 		cell.backgroundColor = .black
@@ -167,7 +161,7 @@ final class SettingsVC: UITableViewController {
 
 				cell.contentView.addSubview(darwinLabel)
 
-				cell.accessoryView = globalManager.commandSwitch
+				cell.accessoryView = GlobalManager.sharedInstance.commandSwitch
 
 				darwinLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor).isActive = true
 				darwinLabel.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 20).isActive = true
@@ -244,27 +238,27 @@ extension SettingsVC: SFSafariViewControllerDelegate, UIColorPickerViewControlle
 
 	func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
 
-		colorManager.accentColor = viewController.selectedColor
+		ColorManager.sharedInstance.accentColor = viewController.selectedColor
 
-		darwinLabel.textColor = colorManager.accentColor
-		globalManager.commandSwitch.onTintColor = colorManager.accentColor
-		accentLabel.textColor = colorManager.accentColor
+		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
+		GlobalManager.sharedInstance.commandSwitch.onTintColor = ColorManager.sharedInstance.accentColor
+		accentLabel.textColor = ColorManager.sharedInstance.accentColor
 
-		indicatorShapeLayer.fillColor = colorManager.accentColor.cgColor
+		indicatorShapeLayer.fillColor = ColorManager.sharedInstance.accentColor.cgColor
 
-		sourceCodeButton.setTitleColor(colorManager.accentColor, for: .normal)
-		copyrightLabel.textColor = colorManager.accentColor
+		sourceCodeButton.setTitleColor(ColorManager.sharedInstance.accentColor, for: .normal)
+		copyrightLabel.textColor = ColorManager.sharedInstance.accentColor
 		
-		uptRootVC.darwinLabel.textColor = colorManager.accentColor
-		uptRootVC.uptimeLabel.textColor = colorManager.accentColor
-		uptRootVC.settingsButton.tintColor = colorManager.accentColor	
+		uptRootVC.darwinLabel.textColor = ColorManager.sharedInstance.accentColor
+		uptRootVC.uptimeLabel.textColor = ColorManager.sharedInstance.accentColor
+		uptRootVC.settingsButton.tintColor = ColorManager.sharedInstance.accentColor	
 
 		/*--- for some reason the colors on the main page didn't update instantly,
 		so notifications it is, :bthishowitis: ---*/
 
 		NotificationCenter.default.post(name: Notification.Name("updateAccentColor"), object: nil)
 
-		userDefaultsManager.saveAccentColor()
+		UserDefaultsManager.sharedInstance.saveAccentColor()
 
 	}
 

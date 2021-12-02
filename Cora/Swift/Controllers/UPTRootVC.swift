@@ -3,10 +3,6 @@ import UIKit
 
 final class UPTRootVC: UIViewController {
 
-	let colorManager = ColorManager.sharedInstance
-	let taskManager = TaskManager.sharedInstance
-	let userDefaultsManager = UserDefaultsManager.sharedInstance
-
 	let settingsButton: UIButton = {
 		let button = UIButton(type: .custom)
 		button.setImage(UIImage(systemName: "gear"), for: .normal)
@@ -41,7 +37,7 @@ final class UPTRootVC: UIViewController {
 
 		super.init(nibName: nil, bundle: nil)
 
-		userDefaultsManager.loadAccentColor()
+		UserDefaultsManager.sharedInstance.loadAccentColor()
 
 		setupUI()
 		launchChosenTask()
@@ -80,9 +76,9 @@ final class UPTRootVC: UIViewController {
 
 	@objc private func setupUI() {
 
- 		darwinLabel.textColor = colorManager.accentColor
-		uptimeLabel.textColor = colorManager.accentColor
-		settingsButton.tintColor = colorManager.accentColor
+ 		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
+		uptimeLabel.textColor = ColorManager.sharedInstance.accentColor
+		settingsButton.tintColor = ColorManager.sharedInstance.accentColor
 
 		view.addSubview(darwinLabel)
 		view.addSubview(uptimeLabel)
@@ -133,7 +129,7 @@ final class UPTRootVC: UIViewController {
 	private func animateUptimeLabel() {
 
 		uptimeLabel.text = ""
-		let finalText = taskManager.uptimeString
+		let finalText = TaskManager.sharedInstance.uptimeString
 		var charIndex = 0.0
 
 		for letter in finalText ?? "" {
@@ -147,10 +143,10 @@ final class UPTRootVC: UIViewController {
 
 	@objc private func launchChosenTask() {
 
-		taskManager.launchDarwinTask()
-		taskManager.launchUptimeTask()
+		TaskManager.sharedInstance.launchDarwinTask()
+		TaskManager.sharedInstance.launchUptimeTask()
 
-		guard let switchState = userDefaultsManager.switchState else {
+		guard let switchState = UserDefaultsManager.sharedInstance.switchState else {
 			return
 		}
 
@@ -159,10 +155,10 @@ final class UPTRootVC: UIViewController {
 		}
 
 		else {
-			darwinLabel.text = taskManager.darwinString
+			darwinLabel.text = TaskManager.sharedInstance.darwinString
 		}
 
-		uptimeLabel.text = taskManager.uptimeString
+		uptimeLabel.text = TaskManager.sharedInstance.uptimeString
 
 	}
 

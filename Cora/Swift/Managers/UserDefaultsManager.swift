@@ -5,9 +5,6 @@ final class UserDefaultsManager {
 
 	static let sharedInstance = UserDefaultsManager()
 
-	let colorManager = ColorManager.sharedInstance
-	let globalManager = GlobalManager.sharedInstance
-
 	var switchState:Bool?
 
 	init() {}
@@ -20,13 +17,13 @@ final class UserDefaultsManager {
 
 	func setSwitchState() {
 
-		globalManager.commandSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState"), animated: true)
+		GlobalManager.sharedInstance.commandSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState"), animated: true)
 		
 	}
 
 	func saveSwitchState() {
 
-		UserDefaults.standard.set(globalManager.commandSwitch.isOn, forKey: "switchState")
+		UserDefaults.standard.set(GlobalManager.sharedInstance.commandSwitch.isOn, forKey: "switchState")
 
 	}
 
@@ -40,17 +37,17 @@ final class UserDefaultsManager {
 				return
 			}
 
-			guard let color = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data) else {
+			guard let unarchivedColor = try NSKeyedUnarchiver.unarchivedObject(ofClass: UIColor.self, from: data) else {
 				return
 			}
 
-			colorManager.accentColor = color
+			ColorManager.sharedInstance.accentColor = unarchivedColor
 
 		}
 
 		catch {
 
-			print("handling the fucking error so this shit lets me compile")
+			print("handling the fucking error so this shit lets me compile, \(error)")
 			return
 
 		}
@@ -61,14 +58,14 @@ final class UserDefaultsManager {
 
 		do {
 
-			let encodedData = try NSKeyedArchiver.archivedData(withRootObject: colorManager.accentColor, requiringSecureCoding: false)
+			let encodedData = try NSKeyedArchiver.archivedData(withRootObject: ColorManager.sharedInstance.accentColor, requiringSecureCoding: false)
 			UserDefaults.standard.set(encodedData, forKey: "accentColor")
 
 		}
 
 		catch {
 
-			print("handling the fucking error so this shit lets me compile")
+			print("handling the fucking error so this shit lets me compile, \(error)")
 			return
 
 		}
