@@ -1,0 +1,11 @@
+Package: me.luki.coraswift
+Name: Cora
+Version: 0.9.0
+Architecture: iphoneos-arm
+Description: See your device's uptime and information in less clicks
+Maintainer: Luki
+Author: Luki
+Section: Utilities
+Depends: ${LIBSWIFT}
+Depiction: https://luki120.github.io/depictions/web/?p=me.luki.coraswift
+SileoDepiction: https://luki120.github.io/depictions/native/me.luki.coraswift/depiction.json
