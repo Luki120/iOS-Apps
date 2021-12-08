@@ -1,0 +1,9 @@
+Package: me.luki.coraswiftui
+Name: Cora
+Version: 0.9.0
+Architecture: iphoneos-arm
+Description: An awesome application!
+Maintainer: Luki
+Author: Luki
+Section: Utilities
+Depends: ${LIBSWIFT}
