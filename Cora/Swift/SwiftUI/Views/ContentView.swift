@@ -7,16 +7,16 @@ struct ContentView: View {
 	@State private var darwinText = ""
 	@State private var uptimeText = ""
 	@State private var showSafari = false
-	@State private var sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Cora"
 	@State private var sheetIsPresented = false
 
 	@AppStorage("accentColor") private var pickerColor:Color = .green
 	@AppStorage("switchState") private var shouldShowDarwinInformation = false
 
-	@Environment(\.colorScheme) var colorScheme
+	@Environment(\.colorScheme) private var colorScheme
 
 	@ObservedObject private var taskManager = TaskManager()
 
+	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Cora"
 	private let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
 	init() {
@@ -40,6 +40,8 @@ struct ContentView: View {
 						}
 
 						uptimeText = uptimeString
+
+						animateUptimeLabel()
 
 					}
 					.onReceive(timer) { _ in
@@ -101,20 +103,20 @@ struct ContentView: View {
 					.foregroundColor(pickerColor)
 					.padding(.horizontal)
 
-					Toggle("", isOn: $shouldShowDarwinInformation)
-						.padding(.horizontal)
-						.toggleStyle(SwitchToggleStyle(tint: pickerColor))
-						.onChange(of: shouldShowDarwinInformation) { newValue in
+				Toggle("", isOn: $shouldShowDarwinInformation)
+					.padding(.horizontal)
+					.toggleStyle(SwitchToggleStyle(tint: pickerColor))
+					.onChange(of: shouldShowDarwinInformation) { newValue in
 
-							if newValue {
-								darwinText = taskManager.darwinString ?? ""
-							} 
+						if newValue {
+							darwinText = taskManager.darwinString ?? ""
+						} 
 
-							else {
-								darwinText = ""
-							}
-
+						else {
+							darwinText = ""
 						}
+
+					}
 
 			}.padding(.horizontal)
 
@@ -161,6 +163,21 @@ struct ContentView: View {
 		}
 		.padding(.top, 44)
 		.background(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
+
+	}
+
+	private func animateUptimeLabel() {
+
+		uptimeText = ""
+		let finalText = taskManager.uptimeString
+		var charIndex = 0.0
+
+		for letter in finalText ?? "" {
+			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { (timer) in
+				self.uptimeText.append(letter)
+			}
+			charIndex += 1
+		}
 
 	}
 
