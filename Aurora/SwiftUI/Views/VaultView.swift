@@ -15,7 +15,7 @@ struct VaultView: View {
 		.tabItem {
 
 			Image(systemName: "lock.fill")
-			.font(.system(size: 22))
+				.font(.system(size: 22))
 
 		}
 

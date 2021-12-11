@@ -127,7 +127,7 @@ struct ContentView: View {
 			.tabItem {
 
 				Image(systemName: "house.fill")
-				.font(.system(size: 22))
+					.font(.system(size: 22))
 
 			}
 
