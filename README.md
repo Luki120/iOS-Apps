@@ -2,7 +2,7 @@
 
 ## Aurora
 
-* A vanilla password generator made both with SwiftUI and UIKit, features also a settings page with some options to customize your password. Maybe some day I'll make it a password generator as well.
+* A vanilla password generator made both with SwiftUI and UIKit, features also a settings page with some options to customize your password. Maybe some day I'll make it a password manager as well.
 
 ## Cora
 
