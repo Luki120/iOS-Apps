@@ -134,7 +134,6 @@ struct ContentView: View {
 			VaultView()
 
 		}
-		.background(Color(.black))
 		.accentColor(auroraColor)
 
 	}
