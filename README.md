@@ -1,8 +1,12 @@
 # Currently
 
+## Aurora
+
+* A vanilla password generator made both with SwiftUI and UIKit, features also a settings page with some options to customize your password. Maybe some day I'll make it a password generator as well.
+
 ## Cora
 
-* Shows your device's uptime in less clicks. No need to open terminal or go through clunky menus anymore, just launch the app from your HomeScreen. It works by running the shell command you'd otherwise type yourself. Additionally, you can choose to show some more device specific information.
+* Shows your device's uptime in less clicks. No need to open the terminal or go through clunky menus anymore, just launch the app from your HomeScreen. It works by running the shell command you'd otherwise have to type yourself. Additionally, you can choose to show some more device specific information in the settings page.
 
 ## NSNotifExample
 
