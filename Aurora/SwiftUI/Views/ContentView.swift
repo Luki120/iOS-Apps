@@ -67,19 +67,11 @@ struct ContentView: View {
 						passwordText = randomString(length: Int(sliderValue))
 						fadePasswordText.toggle()
 					}
-						.font(.system(size: 18))
-						.frame(width: 220, height: 44)
-						.background(auroraColor)
-						.foregroundColor(.white)
-						.clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+						.modifier(ButtonModifier())
 						.padding(.top, 2.5)
 
 					Button("Copy password") { UIPasteboard.general.string = passwordText }
-						.font(.system(size: 18))
-						.frame(width: 220, height: 44)
-						.background(auroraColor)
-						.foregroundColor(.white)
-						.clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+						.modifier(ButtonModifier())
 						.padding(.top, -2.5)
 
 					HStack {
@@ -235,6 +227,24 @@ struct ContentView: View {
 
 		}
 		.background(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
+
+	}
+
+}
+
+
+struct ButtonModifier: ViewModifier {
+
+	private var auroraColor = Color(red: 0.74, green: 0.78, blue: 0.98)
+
+	func body(content: Content) -> some View {
+
+		content
+			.font(.system(size: 18))
+			.frame(width: 220, height: 44)
+			.background(auroraColor)
+			.foregroundColor(.white)
+			.clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
 
 	}
 
