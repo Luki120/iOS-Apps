@@ -8,13 +8,14 @@ struct ContentView: View {
 	because first I didn't know theos supported it and also
 	because these property wrappers take care of all the work :TimPog ---*/
 
-	@State private var color:Color = .randomColor
-	@State private var labelAlpha = 0.0
-
 	@AppStorage("counterCount") private var counter = 0
+
+	@State private var randomColor:Color = .randomColor
+	@State private var labelAlpha = 0.0
 
 	private let firstColor = Color(red: 0.74, green: 0.78, blue: 0.98)
 	private let secondColor = Color(red: 0.77, green: 0.69, blue: 0.91)
+	private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
 	init() {
 		UITabBar.appearance().barTintColor = .systemBackground
@@ -27,75 +28,87 @@ struct ContentView: View {
 
 			Button("Tap me and switch tabs to see the magic") {
 				counter += 1
-				color = .randomColor
-
-				if counter == 14 {
-					withAnimation(.easeInOut(duration: 0.5), {
-						self.labelAlpha = 1
-					})
-				}
-
-				else if counter == 15 {
-					withAnimation(.easeInOut(duration: 0.5), {
-						self.labelAlpha = 0
-					})
-				}
+				randomColor = .randomColor
 			}
-				.font(.system(size :14))
-				.frame(width: 260, height: 40)
-				.buttonStyle(StaticButtonStyle())
-				.background(Color(.systemIndigo))
-				.foregroundColor(.white)
-				.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-				.multilineTextAlignment(.center)
+			.font(.system(size: 14))
+			.frame(width: 260, height: 40)
+			.buttonStyle(StaticButtonStyle())
+			.background(Color(.systemIndigo))
+			.foregroundColor(.white)
+			.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+			.multilineTextAlignment(.center)
 
-				.tabItem {
-					Image(systemName: "bolt.horizontal.fill")
-					Text("Home")
-				}
+			.tabItem {
+				Image(systemName: "bolt.horizontal.fill")
+				Text("Home")
+			}
 
 			VStack {
 
 				Spacer()
 
-				Button(String(counter)) {}
-					.frame(width: 150, height: 40)
-					.background(color)
-					.foregroundColor(.white)
-					.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+				Spacer()
 
-				Button("Reset counter") { counter = 0 }
-					.frame(width: 150, height: 40)
-					.background(LinearGradient(
-						gradient: 
-						Gradient(colors: [firstColor, secondColor]),
-						startPoint: .leading, 
-						endPoint: .trailing)
-					)
-					.foregroundColor(.white)
-					.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-					.padding(.top, 10)
+				VStack {
+
+					Button(String(counter)) {}
+						.frame(width: 150, height: 40)
+						.background(randomColor)
+						.foregroundColor(.white)
+						.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+					Button("Reset counter") { counter = 0 }
+						.frame(width: 150, height: 40)
+						.background(LinearGradient(
+							gradient: 
+							Gradient(colors: [firstColor, secondColor]),
+							startPoint: .leading, 
+							endPoint: .trailing)
+						)
+						.foregroundColor(.white)
+						.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+						.padding(.top, 0.5)
+
+				}
+				.onReceive(timer) { _ in
+
+					if counter == 14 {
+						withAnimation(.easeInOut(duration: 0.5), {
+							self.labelAlpha = 1
+						})
+					}
+
+					else if counter == 15 {
+						withAnimation(.easeInOut(duration: 0.5), {
+							self.labelAlpha = 0
+						})
+					}
+				}
 
 				Spacer()
 
-				Text("The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff")
-					.font(.system(size: 18))
-					.opacity(labelAlpha)
-					.padding(.all, 20)
-					.lineLimit(nil)
-					.foregroundColor(Color(.systemPurple))
-					.multilineTextAlignment(.center)
+				VStack {
+
+					Text("The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff")
+						.font(.system(size: 18))
+						.opacity(labelAlpha)
+						.padding(.all, 20)
+						.foregroundColor(Color(.systemPurple))
+						.multilineTextAlignment(.center)
+
+				}
 
 			}
 			.tabItem {
 				Image(systemName: "bonjour")
 				Text("Not Home")
 			}
-		}.accentColor(Color(.systemPurple))
+		}
+		.accentColor(Color(.systemPurple))
 	}
 }
 
-struct StaticButtonStyle: ButtonStyle {
+private struct StaticButtonStyle: ButtonStyle {
 
 	func makeBody(configuration: Configuration) -> some View {
 
@@ -105,7 +118,7 @@ struct StaticButtonStyle: ButtonStyle {
 
 }
 
-extension Color {
+private extension Color {
 
 	static var randomColor: Color {
 
