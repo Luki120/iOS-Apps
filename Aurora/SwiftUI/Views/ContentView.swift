@@ -4,13 +4,6 @@ import SafariServices
 
 struct ContentView: View {
 
-	@State private var passwordText = ""
-	@State private var fadePasswordText = false
-	@State private var shouldShowSettingsSheet = false
-	@State private var shouldShowSafariSheet = false
-
-	@Environment(\.colorScheme) private var colorScheme
-
 	@AppStorage("sliderValue") private var sliderValue: Double = 0
 	@AppStorage("uppercaseStrings") private var shouldAllowUppercaseStrings = false
 	@AppStorage("lowercaseStrings") private var shouldAllowLowercaseStrings = false
@@ -19,6 +12,13 @@ struct ContentView: View {
 	@AppStorage("onlyUppercaseStrings") private var onlyUppercaseStrings = false
 	@AppStorage("onlyNumberCharacters") private var onlyNumberCharacters = false
 	@AppStorage("onlySpecialCharacters") private var onlySpecialCharacters = false
+
+	@Environment(\.colorScheme) private var colorScheme
+
+	@State private var passwordText = ""
+	@State private var fadePasswordText = false
+	@State private var shouldShowSafariSheet = false
+	@State private var shouldShowSettingsSheet = false
 
 	private let auroraColor = Color(red: 0.74, green: 0.78, blue: 0.98)
 	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Aurora"
@@ -44,10 +44,7 @@ struct ContentView: View {
  					if !fadePasswordText {
 
 						Text(passwordText)
-							.font(.system(size: 22))
-							.lineLimit(1)
-							.minimumScaleFactor(0.5)
-							.transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
+							.modifier(LabelStyle())
 							.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
 
 					}
@@ -55,10 +52,7 @@ struct ContentView: View {
 					else if fadePasswordText {
 
 						Text(passwordText)
-							.font(.system(size: 22))
-							.lineLimit(1)
-							.minimumScaleFactor(0.5)
-							.transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
+							.modifier(LabelStyle())
 							.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
 
 					}
@@ -67,11 +61,11 @@ struct ContentView: View {
 						passwordText = randomString(length: Int(sliderValue))
 						fadePasswordText.toggle()
 					}
-						.modifier(ButtonModifier())
+						.modifier(ButtonStyle())
 						.padding(.top, 2.5)
 
 					Button("Copy password") { UIPasteboard.general.string = passwordText }
-						.modifier(ButtonModifier())
+						.modifier(ButtonStyle())
 						.padding(.top, -2.5)
 
 					HStack {
@@ -227,24 +221,6 @@ struct ContentView: View {
 
 		}
 		.background(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
-
-	}
-
-}
-
-
-struct ButtonModifier: ViewModifier {
-
-	private var auroraColor = Color(red: 0.74, green: 0.78, blue: 0.98)
-
-	func body(content: Content) -> some View {
-
-		content
-			.font(.system(size: 18))
-			.frame(width: 220, height: 44)
-			.background(auroraColor)
-			.foregroundColor(.white)
-			.clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
 
 	}
 
