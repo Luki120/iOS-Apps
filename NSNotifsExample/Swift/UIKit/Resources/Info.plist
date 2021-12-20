@@ -38,7 +38,7 @@
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>me.luki.nsnotifexampleswift</string>
+	<string>me.luki.nsnotifications</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
