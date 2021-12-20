@@ -4,15 +4,15 @@ import SafariServices
 
 struct ContentView: View {
 
-	@State private var darwinText = ""
-	@State private var uptimeText = ""
-	@State private var showSafari = false
-	@State private var sheetIsPresented = false
-
 	@AppStorage("accentColor") private var pickerColor:Color = .green
 	@AppStorage("switchState") private var shouldShowDarwinInformation = false
 
 	@Environment(\.colorScheme) private var colorScheme
+
+	@State private var darwinText = ""
+	@State private var uptimeText = ""
+	@State private var shouldShowSafariSheet = false
+	@State private var shouldShowSettingsSheet = false
 
 	@ObservedObject private var taskManager = TaskManager()
 
@@ -22,6 +22,8 @@ struct ContentView: View {
 	init() {
 		taskManager.launchDarwinTask()
 		taskManager.launchUptimeTask()
+		UINavigationBar.appearance().shadowImage = UIImage()
+		UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
 	}
 
 	var body: some View {
@@ -61,7 +63,7 @@ struct ContentView: View {
 
 							HStack {
 
-								Button { sheetIsPresented.toggle() }
+								Button { shouldShowSettingsSheet.toggle() }
 									label: { Image(systemName: "gear") }
 										.font(.system(size: 10))
 
@@ -70,7 +72,8 @@ struct ContentView: View {
 
 						}
 
-					}.sheet(isPresented: $sheetIsPresented) { settingsView }
+					}
+					.sheet(isPresented: $shouldShowSettingsSheet) { settingsView }
 
 				Spacer()
 
@@ -87,7 +90,8 @@ struct ContentView: View {
 
 			}
 
-		}.navigationViewStyle(StackNavigationViewStyle())
+		}
+		.navigationViewStyle(StackNavigationViewStyle())
 		.accentColor(pickerColor)
 
 	}
@@ -98,51 +102,40 @@ struct ContentView: View {
 
 			HStack {
 
-				Text("Print Darwin Information")
+				Toggle("Print Darwin Information", isOn: $shouldShowDarwinInformation)
 					.font(.custom("Courier", size: 15.5))
 					.foregroundColor(pickerColor)
-					.padding(.horizontal)
-
-				Toggle("", isOn: $shouldShowDarwinInformation)
 					.padding(.horizontal)
 					.toggleStyle(SwitchToggleStyle(tint: pickerColor))
 					.onChange(of: shouldShowDarwinInformation) { newValue in
 
-						if newValue {
-							darwinText = taskManager.darwinString ?? ""
-						} 
-
-						else {
-							darwinText = ""
-						}
+						if newValue { darwinText = taskManager.darwinString ?? "" }
+						else { darwinText = "" }
 
 					}
 
-			}.padding(.horizontal)
+			}
+			.padding(.horizontal)
 
 			HStack {
 
-				Text("Accent Color")
+				ColorPicker("Accent Color", selection: $pickerColor)
 					.font(.custom("Courier", size: 15.5))
 					.foregroundColor(pickerColor)
 					.lineLimit(1)
 					.minimumScaleFactor(0.5)
-					.padding(.horizontal)
+					.padding(EdgeInsets(top: 0, leading: 15, bottom: 0, trailing: 26.5))
 
-				Spacer()
-
-				ColorPicker("", selection: $pickerColor)
-				.padding(.trailing, 25)
-
-			}.padding(EdgeInsets(top: 10, leading: 15, bottom: 0, trailing: 15))
+			}
+			.padding(EdgeInsets(top: 10, leading: 15, bottom: 0, trailing: 15))
 
 			VStack {
 
-				Button("Source Code") { showSafari.toggle() }
+				Button("Source Code") { shouldShowSafariSheet.toggle() }
 					.font(.custom("Courier", size: 15.5))
 					.opacity(0.5)
 					.foregroundColor(pickerColor)
-					.sheet(isPresented: $showSafari) {
+					.sheet(isPresented: $shouldShowSafariSheet) {
 
 						if let url = URL(string: sourceCodeURL) {
 							SafariView(url: url)
@@ -156,7 +149,8 @@ struct ContentView: View {
 					.foregroundColor(pickerColor)
 					.padding(.top, 10)
 
-			}.padding(.top, 50)
+			}
+			.padding(.top, 50)
 
 			Spacer()
 
@@ -184,7 +178,7 @@ struct ContentView: View {
 }
 
 
-struct SafariView: UIViewControllerRepresentable {
+private struct SafariView: UIViewControllerRepresentable {
 
 	let url: URL
 
