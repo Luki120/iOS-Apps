@@ -24,7 +24,7 @@ struct ContentView: View {
 
 	var body: some View {
 
- 		TabView {
+		TabView {
 
 			Button("Tap me and switch tabs to see the magic") {
 				counter += 1
