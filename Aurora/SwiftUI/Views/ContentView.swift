@@ -61,8 +61,8 @@ struct ContentView: View {
 						passwordText = randomString(length: Int(sliderValue))
 						fadePasswordText.toggle()
 					}
-						.modifier(ButtonStyle())
-						.padding(.top, 2.5)
+					.modifier(ButtonStyle())
+					.padding(.top, 2.5)
 
 					Button("Copy password") { UIPasteboard.general.string = passwordText }
 						.modifier(ButtonStyle())
@@ -75,7 +75,7 @@ struct ContentView: View {
 							passwordText = randomString(length: Int(sliderValue))
 
 						})
-							.frame(width: UIScreen.main.bounds.width - 100, height: 44)
+						.frame(width: UIScreen.main.bounds.width - 100, height: 44)
 
 						Text("\(sliderValue, specifier: "%.0f")")
 							.font(.system(size: 10))
