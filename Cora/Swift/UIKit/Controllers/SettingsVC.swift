@@ -4,7 +4,7 @@ import SafariServices
 
 final class SettingsVC: UITableViewController {
 
-	private let cellIdentifier = "cell"
+	private let cellIdentifier = "Cell"
 
 	private let uptRootVC = UPTRootVC()
 
@@ -104,7 +104,7 @@ final class SettingsVC: UITableViewController {
 
 		super.traitCollectionDidChange(previousTraitCollection)
 
-		traitCollection.userInterfaceStyle == .dark ? (view.backgroundColor = .black) : (view.backgroundColor = .white)
+		tableView.backgroundColor = traitCollection.userInterfaceStyle == .dark ? .black : .white
 
 	}
 
@@ -119,7 +119,6 @@ final class SettingsVC: UITableViewController {
 		sourceCodeButton.setTitleColor(ColorManager.sharedInstance.accentColor, for: .normal)
 		copyrightLabel.textColor = ColorManager.sharedInstance.accentColor
 
-		view.backgroundColor = .black
 		tableView.separatorStyle = .none
 
 	}
@@ -140,7 +139,7 @@ final class SettingsVC: UITableViewController {
 
 	}
 
-	// Table view data source
+	// MARK: - Table View Data Source
 
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
@@ -153,7 +152,7 @@ final class SettingsVC: UITableViewController {
 		let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
 
 		cell.selectionStyle = .none
-		cell.backgroundColor = .black
+		cell.backgroundColor = .clear
 
 		switch indexPath.row {
 
@@ -190,9 +189,7 @@ final class SettingsVC: UITableViewController {
 				stackView.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor).isActive = true
 				stackView.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor).isActive = true
 
-			default:
-
-				break
+			default: break
 
 		}
 
@@ -200,31 +197,26 @@ final class SettingsVC: UITableViewController {
 
 	}
 
+	// MARK: - Table View Delegate
+
 	override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
 		tableView.deselectRow(at: indexPath, animated: true)
 
-		if indexPath.row == 1 {
-
-			present(colorPicker, animated: true, completion: nil)
-
-		}
+		if indexPath.row == 1 { present(colorPicker, animated: true, completion: nil) }
 
 	}
 
 	override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 
 		let headerView = UIView()
-		headerView.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: 44)
 		return headerView
 
 	}
 
 	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 
-		if indexPath.row == 2 {
-			return 120
-		}
+		if indexPath.row == 2 { return 120 }
 
 		return 44
 
@@ -234,7 +226,7 @@ final class SettingsVC: UITableViewController {
 
 extension SettingsVC: SFSafariViewControllerDelegate, UIColorPickerViewControllerDelegate {
 
-	// delegate methods
+	// MARK: - Delegate Methods
 
 	func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
 
