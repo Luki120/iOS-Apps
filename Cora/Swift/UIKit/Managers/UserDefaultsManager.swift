@@ -1,11 +1,12 @@
 import Foundation
+import UIKit
 
 
 final class UserDefaultsManager {
 
 	static let sharedInstance = UserDefaultsManager()
 
-	var switchState:Bool?
+	var switchState: Bool?
 
 	init() {}
 
