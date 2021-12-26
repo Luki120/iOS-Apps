@@ -29,7 +29,7 @@ final class UPTRootVC: UIViewController {
 
 	required init?(coder aDecoder: NSCoder) {
 
-		fatalError("init(coder:) has not been implemented")
+		super.init(coder: aDecoder)
 
 	}
 
@@ -42,12 +42,13 @@ final class UPTRootVC: UIViewController {
 		setupUI()
 		launchChosenTask()
 		animateUptimeLabel()
+		updateAccentColor()
 
 		settingsButton.addTarget(self, action: #selector(didTapSettingsButton), for: .touchUpInside)
 
 		NotificationCenter.default.removeObserver(self)
 		NotificationCenter.default.addObserver(self, selector: #selector(launchChosenTask), name: Notification.Name("launchChosenTask"), object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(setupUI), name: Notification.Name("updateAccentColor"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(updateAccentColor), name: Notification.Name("updateAccentColor"), object: nil)
 
 		Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(launchChosenTask), userInfo: nil, repeats: true)
 
@@ -74,11 +75,7 @@ final class UPTRootVC: UIViewController {
 
 	}
 
-	@objc private func setupUI() {
-
- 		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
-		uptimeLabel.textColor = ColorManager.sharedInstance.accentColor
-		settingsButton.tintColor = ColorManager.sharedInstance.accentColor
+	private func setupUI() {
 
 		view.addSubview(darwinLabel)
 		view.addSubview(uptimeLabel)
@@ -133,7 +130,7 @@ final class UPTRootVC: UIViewController {
 		var charIndex = 0.0
 
 		for letter in finalText ?? "" {
-			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { (timer) in
+			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { timer in
 				self.uptimeLabel.text?.append(letter)
 			}
 			charIndex += 1
@@ -159,6 +156,14 @@ final class UPTRootVC: UIViewController {
 		}
 
 		uptimeLabel.text = TaskManager.sharedInstance.uptimeString
+
+	}
+
+	@objc private func updateAccentColor() {
+
+ 		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
+		uptimeLabel.textColor = ColorManager.sharedInstance.accentColor
+		settingsButton.tintColor = ColorManager.sharedInstance.accentColor
 
 	}
 
