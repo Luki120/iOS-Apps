@@ -4,14 +4,7 @@ import SafariServices
 
 struct ContentView: View {
 
-	@AppStorage("sliderValue") private var sliderValue: Double = 0
-	@AppStorage("uppercaseStrings") private var shouldAllowUppercaseStrings = false
-	@AppStorage("lowercaseStrings") private var shouldAllowLowercaseStrings = false
-	@AppStorage("numberCharacters") private var shouldAllowNumberCharacters = false
-	@AppStorage("specialCharacters") private var shouldAllowSpecialCharacters = false
-	@AppStorage("onlyUppercaseStrings") private var onlyUppercaseStrings = false
-	@AppStorage("onlyNumberCharacters") private var onlyNumberCharacters = false
-	@AppStorage("onlySpecialCharacters") private var onlySpecialCharacters = false
+	@AppStorage("sliderValue") private var sliderValue = 0.0
 
 	@Environment(\.colorScheme) private var colorScheme
 
@@ -24,8 +17,7 @@ struct ContentView: View {
 	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Aurora"
 
 	init() {
-		UINavigationBar.appearance().shadowImage = UIImage()
-		UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+ 		UINavigationBar.appearance().shadowImage = UIImage()
 		UITabBar.appearance().clipsToBounds = true
 		UITabBar.appearance().isTranslucent = false
 		UITabBar.appearance().backgroundColor = .systemBackground
@@ -126,23 +118,31 @@ struct ContentView: View {
 
 	private func randomString(length: Int) -> String {
 
-		var characters = "abcdefghijklmnopqrstuvwxyz"
+ 		var characters = "abcdefghijklmnopqrstuvwxyz"
 
-		if shouldAllowUppercaseStrings { characters += "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }
+		let numbers = "0123456789"
+		let specialCharacters = "!@#$%^&*()_+-=[]{}|;':,./<>?`~"
+		let uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-		if shouldAllowNumberCharacters { characters += "0123456789" }
+		if allowUppercaseCharacters { characters += uppercaseCharacters }
 
-		if shouldAllowSpecialCharacters { characters += "!¡@·#$~%&/()=?¿[]{}-,.;:_+*<>|" }
+		if allowNumberCharacters { characters += numbers }
 
-		if onlyUppercaseStrings { characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" }
+		if allowSpecialCharacters { characters += specialCharacters }
 
-		if onlyNumberCharacters { characters = "0123456789" }
+		else if !allowUppercaseCharacters && !allowNumberCharacters && !allowSpecialCharacters {
 
-		if onlySpecialCharacters { characters = "!¡@·#$~%&/()=?¿[]{}-,.;:_+*<>|" }
+			characters = "abcdefghijklmnopqrstuvwxyz"
+
+		}
 
 		return String((0..<length).map { _ in characters.randomElement() ?? "c" })
 
 	}
+
+	@AppStorage("allowNumberCharacters") private var allowNumberCharacters = false
+	@AppStorage("allowSpecialCharacters") private var allowSpecialCharacters = false
+ 	@AppStorage("allowUppercaseCharacters") private var allowUppercaseCharacters = false
 
 	private var settingsView: some View {
 
@@ -150,84 +150,64 @@ struct ContentView: View {
 
 			Form {
 
-				HStack { 
+				Section(header: Text("Settings")) {
 
-					Toggle("A-Z", isOn: $shouldAllowUppercaseStrings)
-						.toggleStyle(SwitchToggleStyle(tint: auroraColor))
-						
-				}
-				.listRowBackground(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
+					Group {
 
-				HStack {
+						Toggle("A-Z", isOn: $allowUppercaseCharacters)
+						Toggle("0-9", isOn: $allowNumberCharacters)
+						Toggle("!@#$%^&*", isOn: $allowSpecialCharacters)
 
-					Toggle("0-9", isOn: $shouldAllowNumberCharacters)
-						.toggleStyle(SwitchToggleStyle(tint: auroraColor))
-					
-				}
-				.listRowBackground(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
-
-				HStack {
-
-					Toggle("!@#$%^&*", isOn: $shouldAllowSpecialCharacters)
-						.toggleStyle(SwitchToggleStyle(tint: auroraColor))
+					}
+					.toggleStyle(SwitchToggleStyle(tint: auroraColor))
+					.listRowBackground(colorScheme == .dark ? Color.black : Color.white)
 
 				}
-				.listRowBackground(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
-
-				HStack {
-
-					Toggle("Only uppercase", isOn: $onlyUppercaseStrings)
-						.toggleStyle(SwitchToggleStyle(tint: auroraColor))
-
-				}
-				.listRowBackground(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
-
-				HStack {
-
-					Toggle("Only numbers", isOn: $onlyNumberCharacters)
-						.toggleStyle(SwitchToggleStyle(tint: auroraColor))
-
-				}
-				.listRowBackground(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
-
-				HStack {
-
-					Toggle("Only special characters", isOn: $onlySpecialCharacters)
-						.toggleStyle(SwitchToggleStyle(tint: auroraColor))
-
-				}
-				.listRowBackground(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
 
 			}
+			.padding(.top, 22)
 
-			VStack {
+			Section(footer:
 
-				Button { shouldShowSafariSheet.toggle() }
-					label: { Text("Source Code") }
-						.font(.system(size: 15.5))
-						.foregroundColor(.gray)
-						.sheet(isPresented: $shouldShowSafariSheet) {
-							if let url = URL(string: sourceCodeURL) {
-								SafariView(url: url)
+				VStack {
+
+					Button { shouldShowSafariSheet.toggle() }
+						label: { Text("Source Code") }
+							.font(.system(size: 15.5))
+							.foregroundColor(.gray)
+							.sheet(isPresented: $shouldShowSafariSheet) {
+								getURLFromURLString(string: sourceCodeURL)
 							}
-						 }
 
-				Text("2021 © Luki120")
-					.font(.system(size: 10))
-					.foregroundColor(.gray)
-					.padding(.top, 5)
+					Text("2021 © Luki120")
+						.font(.system(size: 10))
+						.foregroundColor(.gray)
+						.padding(.top, 5)
 
-			}.padding(.bottom, 30)
+				}
+				.padding(.bottom, 30)
+
+			) {}
 
 		}
 		.background(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
 
 	}
 
+	private func getURLFromURLString(string: String) -> AnyView {
+
+		guard let url = URL(string: string) else {
+			return AnyView(Text("Invalid URL"))
+		}
+
+		return AnyView(SafariView(url: url))
+
+	}
+
 }
 
 
-struct SafariView: UIViewControllerRepresentable {
+private struct SafariView: UIViewControllerRepresentable {
 
 	let url: URL
 
