@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ContentView: View {
 
-	@ObservedObject var viewModel = WeatherViewModel()
+	@StateObject var viewModel = WeatherViewModel()
 
 	var body: some View {
 
