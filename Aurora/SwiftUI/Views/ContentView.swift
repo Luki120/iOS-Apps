@@ -33,48 +33,49 @@ struct ContentView: View {
 
 				VStack {
 
- 					if !fadePasswordText {
+					VStack(spacing: 5) {
 
-						Text(passwordText)
-							.modifier(LabelStyle())
-							.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
+						if !fadePasswordText {
 
-					}
- 
-					else if fadePasswordText {
+							Text(passwordText)
+								.modifier(LabelStyle())
+								.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
 
-						Text(passwordText)
-							.modifier(LabelStyle())
-							.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
+						}
 
-					}
+						else if fadePasswordText {
 
-					Button("Regenerate password") {
-						passwordText = randomString(length: Int(sliderValue))
-						fadePasswordText.toggle()
-					}
-					.modifier(ButtonStyle())
-					.padding(.top, 2.5)
+							Text(passwordText)
+								.modifier(LabelStyle())
+								.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
 
-					Button("Copy password") { UIPasteboard.general.string = passwordText }
-						.modifier(ButtonStyle())
-						.padding(.top, -2.5)
+						}
 
-					HStack {
-
-						Slider(value: $sliderValue, in: 0...25, onEditingChanged: { _ in
-
+						Button("Regenerate password") {
 							passwordText = randomString(length: Int(sliderValue))
+							fadePasswordText.toggle()
+						}
+						.modifier(ButtonStyle())
 
-						})
-						.frame(width: UIScreen.main.bounds.width - 100, height: 44)
+						Button("Copy password") { UIPasteboard.general.string = passwordText }
+							.modifier(ButtonStyle())
 
-						Text("\(sliderValue, specifier: "%.0f")")
-							.font(.system(size: 10))
-							.foregroundColor(Color(.gray))
+						HStack {
+
+							Slider(value: $sliderValue, in: 0...25, onEditingChanged: { _ in
+
+								passwordText = randomString(length: Int(sliderValue))
+
+							})
+							.frame(width: UIScreen.main.bounds.width - 100, height: 44)
+
+							Text("\(sliderValue, specifier: "%.0f")")
+								.font(.system(size: 10))
+								.foregroundColor(.gray)
+
+						}
 
 					}
-					.padding(.top, -2.5)
 
 					Spacer()
 
@@ -85,12 +86,12 @@ struct ContentView: View {
 
 						HStack {
 
+							Text("")
+
 							Button { shouldShowSettingsSheet.toggle() }
 
 							label: { Image(systemName: "gear") }
 								.sheet(isPresented: $shouldShowSettingsSheet) { settingsView }
-
-							Text("")
 
 						}
 
@@ -99,7 +100,6 @@ struct ContentView: View {
 				}
 				.navigationBarTitle("Aurora", displayMode: .inline)
 				.padding(20)
-
 			}
 			.navigationViewStyle(StackNavigationViewStyle())
 			.tabItem {
@@ -167,7 +167,7 @@ struct ContentView: View {
 			}
 			.padding(.top, 22)
 
-			Section(footer:
+			Section(footer: Text("")) {
 
 				VStack {
 
@@ -176,31 +176,21 @@ struct ContentView: View {
 							.font(.system(size: 15.5))
 							.foregroundColor(.gray)
 							.sheet(isPresented: $shouldShowSafariSheet) {
-								getURLFromURLString(string: sourceCodeURL)
+								SafariView(url: URL(string: sourceCodeURL))
 							}
 
-					Text("2021 © Luki120")
+					Text("2022 © Luki120")
 						.font(.system(size: 10))
 						.foregroundColor(.gray)
 						.padding(.top, 5)
 
 				}
-				.padding(.bottom, 30)
 
-			) {}
+			}
+			.padding(.top, 10)
 
 		}
-		.background(colorScheme == .dark ? Color.black.edgesIgnoringSafeArea(.all) : Color.white.edgesIgnoringSafeArea(.all))
-
-	}
-
-	private func getURLFromURLString(string: String) -> AnyView {
-
-		guard let url = URL(string: string) else {
-			return AnyView(Text("Invalid URL"))
-		}
-
-		return AnyView(SafariView(url: url))
+		.background(colorScheme == .dark ? Color.black : Color.white)
 
 	}
 
@@ -209,9 +199,16 @@ struct ContentView: View {
 
 private struct SafariView: UIViewControllerRepresentable {
 
-	let url: URL
+	let url: URL?
 
 	func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
+
+		let fallbackURL = URL(string: "https://github.com/Luki120")! // this 100% exists so it's safe
+
+		guard let url = url else {
+			return SFSafariViewController(url: fallbackURL)
+		}
+
 		return SFSafariViewController(url: url)
 	}
 
