@@ -13,7 +13,6 @@ struct ContentView: View {
 	@State private var shouldShowSafariSheet = false
 	@State private var shouldShowSettingsSheet = false
 
-	private let auroraColor = Color(red: 0.74, green: 0.78, blue: 0.98)
 	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Aurora"
 
 	init() {
@@ -56,6 +55,7 @@ struct ContentView: View {
 							fadePasswordText.toggle()
 						}
 						.modifier(ButtonStyle())
+						.padding(.top, 10)
 
 						Button("Copy password") { UIPasteboard.general.string = passwordText }
 							.modifier(ButtonStyle())
@@ -112,7 +112,7 @@ struct ContentView: View {
 			VaultView()
 
 		}
-		.accentColor(auroraColor)
+		.accentColor(Color.auroraColor)
 
 	}
 
@@ -159,7 +159,7 @@ struct ContentView: View {
 						Toggle("!@#$%^&*", isOn: $allowSpecialCharacters)
 
 					}
-					.toggleStyle(SwitchToggleStyle(tint: auroraColor))
+					.toggleStyle(SwitchToggleStyle(tint: Color.auroraColor))
 					.listRowBackground(colorScheme == .dark ? Color.black : Color.white)
 
 				}
@@ -210,6 +210,7 @@ private struct SafariView: UIViewControllerRepresentable {
 		}
 
 		return SFSafariViewController(url: url)
+
 	}
 
 	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
