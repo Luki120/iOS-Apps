@@ -3,14 +3,12 @@ import SwiftUI
 
 struct ButtonStyle: ViewModifier {
 
-	private let auroraColor = Color(red: 0.74, green: 0.78, blue: 0.98)
-
 	func body(content: Content) -> some View {
 
 		content
 			.font(.system(size: 18))
 			.frame(width: 220, height: 44)
-			.background(auroraColor)
+			.background(Color.auroraColor)
 			.foregroundColor(.white)
 			.clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
 
@@ -30,5 +28,12 @@ struct LabelStyle: ViewModifier {
 			.transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
 
 	}
+
+}
+
+
+extension Color {
+
+	static let auroraColor = Color(red: 0.74, green: 0.78, blue: 0.98)
 
 }
