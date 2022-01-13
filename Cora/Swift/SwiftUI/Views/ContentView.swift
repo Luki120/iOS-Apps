@@ -133,7 +133,7 @@ struct ContentView: View {
 						.opacity(0.5)
 						.foregroundColor(pickerColor)
 						.sheet(isPresented: $shouldShowSafariSheet) {
-								SafariView(url: URL(string: sourceCodeURL))
+							SafariView(url: URL(string: sourceCodeURL))
 						}
 
 					Text("2022 © Luki120")
