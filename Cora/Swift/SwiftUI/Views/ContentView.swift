@@ -32,30 +32,18 @@ struct ContentView: View {
 				Spacer()
 
 				Text(uptimeText)
-					.onAppear {
-
-						taskManager.launchTask(withArguments: ["-c", "uptime"])
-
-						guard let uptimeString = taskManager.outputString else {
-							return
-						}
-
-						uptimeText = uptimeString
-
-						animateUptimeLabel()
-
-					}
-					.onReceive(timer) { _ in
-
- 						taskManager.launchTask(withArguments: ["-c", "uptime"])
-						uptimeText = taskManager.outputString ?? ""
-
-					}
 					.font(.custom("Courier", size: 16))
 					.foregroundColor(pickerColor)
 					.multilineTextAlignment(.center)
 					.padding()
-
+					.onAppear {
+						setUptimeText()
+						animateUptimeLabel()
+					}
+					.onReceive(timer) { _ in
+ 						taskManager.launchTask(withArguments: ["-c", "uptime"])
+						uptimeText = taskManager.outputString ?? ""
+					}
 					.toolbar {
 
 						ToolbarItem(placement: .navigationBarTrailing) {
@@ -78,23 +66,11 @@ struct ContentView: View {
 				Spacer()
 
 				Text(darwinText)
-					.onAppear {
-
-						guard taskManager.shouldPrintDarwinInformation else { return }
-
-						taskManager.launchTask(withArguments: ["-c", "uname -a"])
-
-						guard let darwinString = taskManager.outputString else {
-							return
-						}			
-
-						darwinText = darwinString
-
-					}
 					.font(.custom("Courier", size: 12))
 					.foregroundColor(pickerColor)
 					.multilineTextAlignment(.center)
 					.padding()
+					.onAppear(perform: setDarwinText)
 
 			}
 
@@ -114,14 +90,8 @@ struct ContentView: View {
 				.foregroundColor(pickerColor)
 				.toggleStyle(SwitchToggleStyle(tint: pickerColor))
 				.onChange(of: taskManager.shouldPrintDarwinInformation) { newValue in
-
-					if newValue {
-						taskManager.launchTask(withArguments: ["-c", "uname -a"])
-						darwinText = taskManager.outputString ?? ""
-					}
-
+					if newValue { setDarwinText() }
 					else { darwinText = "" }
-
 				}
 
 			ColorPicker("Accent Color", selection: $pickerColor)
@@ -157,6 +127,32 @@ struct ContentView: View {
 		}
 		.padding(.top, 44)
 		.background(colorScheme == .dark ? Color.black : Color.white)
+
+	}
+
+	private func setUptimeText() {
+
+		taskManager.launchTask(withArguments: ["-c", "uptime"])
+
+		guard let uptimeString = taskManager.outputString else {
+			return
+		}
+
+		uptimeText = uptimeString
+
+	}
+
+	private func setDarwinText() {
+
+		guard taskManager.shouldPrintDarwinInformation else { return }
+
+		taskManager.launchTask(withArguments: ["-c", "uname -a"])
+
+		guard let darwinString = taskManager.outputString else {
+			return
+		}			
+
+		darwinText = darwinString
 
 	}
 
