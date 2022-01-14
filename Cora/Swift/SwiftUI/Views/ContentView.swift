@@ -34,7 +34,9 @@ struct ContentView: View {
 				Text(uptimeText)
 					.onAppear {
 
- 						guard let uptimeString = taskManager.uptimeString else {
+						taskManager.launchTask(withArguments: ["-c", "uptime"])
+
+						guard let uptimeString = taskManager.outputString else {
 							return
 						}
 
@@ -45,8 +47,8 @@ struct ContentView: View {
 					}
 					.onReceive(timer) { _ in
 
- 						taskManager.launchTask()
-						uptimeText = taskManager.uptimeString ?? ""
+ 						taskManager.launchTask(withArguments: ["-c", "uptime"])
+						uptimeText = taskManager.outputString ?? ""
 
 					}
 					.font(.custom("Courier", size: 16))
@@ -60,11 +62,12 @@ struct ContentView: View {
 
 							HStack {
 
+								Text("")
+
 								Button { shouldShowSettingsSheet.toggle() }
 									label: { Image(systemName: "gear") }
 										.font(.system(size: 10))
 
-								Text("")
 							}
 
 						}
@@ -77,7 +80,11 @@ struct ContentView: View {
 				Text(darwinText)
 					.onAppear {
 
-						guard let darwinString = taskManager.darwinString else {
+						guard taskManager.shouldPrintDarwinInformation else { return }
+
+						taskManager.launchTask(withArguments: ["-c", "uname -a"])
+
+						guard let darwinString = taskManager.outputString else {
 							return
 						}			
 
@@ -109,8 +116,8 @@ struct ContentView: View {
 				.onChange(of: taskManager.shouldPrintDarwinInformation) { newValue in
 
 					if newValue {
-						taskManager.launchTask()
-						darwinText = taskManager.darwinString ?? ""
+						taskManager.launchTask(withArguments: ["-c", "uname -a"])
+						darwinText = taskManager.outputString ?? ""
 					}
 
 					else { darwinText = "" }
@@ -156,10 +163,10 @@ struct ContentView: View {
 	private func animateUptimeLabel() {
 
 		uptimeText = ""
-		let finalText = taskManager.uptimeString
+		let finalText = taskManager.outputString ?? ""
 		var charIndex = 0.0
 
-		for letter in finalText ?? "" {
+		for letter in finalText {
 			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { timer in
 				self.uptimeText.append(letter)
 			}
@@ -175,7 +182,7 @@ private struct SafariView: UIViewControllerRepresentable {
 
 	let url: URL?
 
-	func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
+	func makeUIViewController(context: Context) -> SFSafariViewController {
 
 		let fallbackURL = URL(string: "https://github.com/Luki120")! // this 100% exists so it's safe
 
@@ -187,7 +194,7 @@ private struct SafariView: UIViewControllerRepresentable {
 
 	}
 
-	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
+	func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {
 
 	}
 
