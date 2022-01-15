@@ -10,8 +10,8 @@ struct ContentView: View {
 
 	@AppStorage("counterCount") private var counter = 0
 
-	@State private var randomColor:Color = .randomColor
 	@State private var labelAlpha = 0.0
+	@State private var randomColor:Color = .randomColor
 
 	private let firstColor = Color(red: 0.74, green: 0.78, blue: 0.98)
 	private let secondColor = Color(red: 0.77, green: 0.69, blue: 0.91)
@@ -26,87 +26,91 @@ struct ContentView: View {
 
 		TabView {
 
-			Button("Tap me and switch tabs to see the magic") {
-				counter += 1
-				randomColor = .randomColor
-			}
-			.font(.system(size: 14))
-			.frame(width: 260, height: 40)
-			.buttonStyle(StaticButtonStyle())
-			.background(Color(.systemIndigo))
-			.foregroundColor(.white)
-			.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-			.multilineTextAlignment(.center)
+			VStack {
 
+				Button("Tap me and switch tabs to see magic") {
+					counter += 1
+					randomColor = .randomColor
+				}
+				.font(.system(size: 14))
+				.frame(width: 260, height: 40)
+				.buttonStyle(StaticButtonStyle())
+				.background(
+					LinearGradient(gradient: Gradient(
+							colors: [firstColor, secondColor]
+						),
+						startPoint: .topLeading,
+						endPoint: .bottomTrailing
+					)
+				)
+				.foregroundColor(.white)
+				.clipShape(Capsule(style: .continuous))
+				.multilineTextAlignment(.center)
+
+			}
 			.tabItem {
 				Image(systemName: "bolt.horizontal.fill")
 				Text("Home")
 			}
 
-			VStack {
-
-				Spacer()
-
-				Spacer()
+			NavigationView {
 
 				VStack {
 
-					Button(String(counter)) {}
+					Text(String(counter))
 						.frame(width: 150, height: 40)
-						.background(randomColor)
+						.background(Color.randomColor)
 						.foregroundColor(.white)
-						.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+						.clipShape(Capsule(style: .continuous))
 
-					Button("Reset counter") { counter = 0 }
-						.frame(width: 150, height: 40)
-						.background(LinearGradient(
-							gradient: 
-							Gradient(colors: [firstColor, secondColor]),
-							startPoint: .leading, 
-							endPoint: .trailing)
-						)
-						.foregroundColor(.white)
-						.clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-						.padding(.top, 0.5)
-
-				}
-				.onReceive(timer) { _ in
-
-					if counter == 14 {
-						withAnimation(.easeInOut(duration: 0.5), {
-							self.labelAlpha = 1
-						})
-					}
-
-					else if counter == 15 {
-						withAnimation(.easeInOut(duration: 0.5), {
-							self.labelAlpha = 0
-						})
-					}
-				}
-
-				Spacer()
-
-				VStack {
-
-					Text("The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff")
-						.font(.system(size: 18))
+					Text("The power of SwiftUI 😈, learn it, embrace it, and use it to make awesome stuff")
+						.font(.system(size: 16))
 						.opacity(labelAlpha)
-						.padding(.all, 20)
+						.padding(.top, 15)
 						.foregroundColor(Color(.systemPurple))
 						.multilineTextAlignment(.center)
 
 				}
+				.onReceive(timer) { _ in fireTimer() }
+				.toolbar {
+
+					ToolbarItem(placement: .navigationBarTrailing) {
+
+						Button { counter = 0 }
+							label: { Image(systemName: "xmark.circle.fill") }
+
+					}
+
+				}
 
 			}
+			.navigationViewStyle(StackNavigationViewStyle())	
 			.tabItem {
 				Image(systemName: "bonjour")
 				Text("Not Home")
 			}
+
 		}
 		.accentColor(Color(.systemPurple))
+
+	}
+
+	private func fireTimer() {
+
+		if counter == 14 {
+			withAnimation(.easeInOut(duration: 0.5), {
+				self.labelAlpha = 1
+			})
+		}
+
+		else if counter == 15 {
+			withAnimation(.easeInOut(duration: 0.5), {
+				self.labelAlpha = 0
+			})
+		}
 	}
 }
+
 
 private struct StaticButtonStyle: ButtonStyle {
 
@@ -117,6 +121,7 @@ private struct StaticButtonStyle: ButtonStyle {
 	}
 
 }
+
 
 private extension Color {
 
