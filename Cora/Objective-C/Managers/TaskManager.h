@@ -3,11 +3,9 @@
 
 
 @interface TaskManager : NSObject
+@property (copy, nonatomic) NSString *outputString;
 + (TaskManager *)sharedInstance;
-- (void)launchDarwinTask;
-- (void)launchUptimeTask;
-@property (copy, nonatomic) NSString *darwinString;
-@property (copy, nonatomic) NSString *uptimeString;
+- (void)launchTaskWithArguments:(NSArray *)arguments;
 @end
 
 

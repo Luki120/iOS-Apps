@@ -7,7 +7,7 @@
 
 @class UPTRootVC;
 
-#define kUserInterfaceStyle (UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark)
+#define kUserInterfaceStyle UIScreen.mainScreen.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark
 
 // Global
 

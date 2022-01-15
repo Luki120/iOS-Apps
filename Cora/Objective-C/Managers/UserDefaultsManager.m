@@ -9,11 +9,7 @@
 	static UserDefaultsManager *sharedInstance = nil;
 	static dispatch_once_t onceToken;
 
-	dispatch_once(&onceToken, ^{
-
-		sharedInstance = [self new];
-
-	});
+	dispatch_once(&onceToken, ^{ sharedInstance = [self new]; });
 
 	return sharedInstance;
 
@@ -44,7 +40,7 @@
 - (void)loadAccentColor {
 
 	NSData *decodedData = [NSUserDefaults.standardUserDefaults objectForKey:@"accentColor"];
-	[ColorManager sharedInstance].accentColor = [NSKeyedUnarchiver unarchivedObjectOfClass:[UIColor class] fromData:decodedData error:nil];
+	[ColorManager sharedInstance].accentColor = [NSKeyedUnarchiver unarchivedObjectOfClass:UIColor.class fromData:decodedData error:nil];
 
 }
 

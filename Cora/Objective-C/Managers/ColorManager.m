@@ -9,11 +9,7 @@
 	static ColorManager *sharedInstance = nil;
 	static dispatch_once_t onceToken;
 
-	dispatch_once(&onceToken, ^{
-
-		sharedInstance = [self new];
-
-	});
+	dispatch_once(&onceToken, ^{ sharedInstance = [self new]; });
 
 	return sharedInstance;
 

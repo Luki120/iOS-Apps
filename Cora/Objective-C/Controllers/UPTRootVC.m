@@ -10,27 +10,36 @@
 
 	if(self) {
 
-		[self launchTask];
+		[self setupDefaults];
+		[self setupUI];
+		[self setupObservers];
 
-		[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(launchTask) userInfo:nil repeats:YES];
-
-		[NSNotificationCenter.defaultCenter removeObserver:self];
-		[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(launchTask) name:@"launchChosenTask" object:nil];
-
-		dispatch_async(dispatch_get_main_queue(), ^{
-
-			self.settingsVC = [SettingsVC new];
-			[self.settingsVC setRootVC:self];
-
-			self.darwinLabel.textColor = [ColorManager sharedInstance].accentColor;
-			self.uptimeLabel.textColor = [ColorManager sharedInstance].accentColor;
-			self.settingsButton.tintColor = [ColorManager sharedInstance].accentColor;
-
-		});
+		[NSTimer scheduledTimerWithTimeInterval:5 target:self selector:@selector(updateUptimeText) userInfo:nil repeats:YES];
 
 	}
 
 	return self;
+
+}
+
+
+- (void)setupDefaults {
+
+	[[UserDefaultsManager sharedInstance] loadAccentColor];
+	[[UserDefaultsManager sharedInstance] loadSwitchState];
+
+	BOOL state = [UserDefaultsManager sharedInstance].switchState;
+
+	if(state) [self setDarwinText];
+
+}
+
+
+- (void)setupObservers {
+
+	[NSNotificationCenter.defaultCenter removeObserver:self];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(setDarwinText) name:@"launchChosenTask" object:nil];
+	[NSNotificationCenter.defaultCenter addObserver:self selector:@selector(updateAccentColors) name:@"updateAccentColors" object:nil];
 
 }
 
@@ -41,7 +50,6 @@
 
 	// Do any additional setup after loading the view, typically from a nib.
 
-	[self setupUI];
 	self.view.backgroundColor = UIColor.systemBackgroundColor;
 
 }
@@ -59,8 +67,8 @@
 - (void)setupUI {
 
 	self.darwinLabel = [UILabel new];
-	self.darwinLabel.text = [TaskManager sharedInstance].darwinString;
 	self.darwinLabel.font = [UIFont fontWithName:@"Courier" size:12];
+	self.darwinLabel.text = [TaskManager sharedInstance].outputString;
 	self.darwinLabel.textColor = [ColorManager sharedInstance].accentColor;
 	self.darwinLabel.numberOfLines = 0;
 	self.darwinLabel.textAlignment = NSTextAlignmentCenter;
@@ -69,6 +77,7 @@
 
 	self.uptimeLabel = [UILabel new];
 	self.uptimeLabel.font = [UIFont fontWithName:@"Courier" size:16];
+	self.uptimeLabel.text = [self setUptimeText];
 	self.uptimeLabel.textColor = [ColorManager sharedInstance].accentColor;
 	self.uptimeLabel.numberOfLines = 0;
 	self.uptimeLabel.textAlignment = NSTextAlignmentCenter;
@@ -77,17 +86,19 @@
 
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
 
-		[self animateLabelShowText:[TaskManager sharedInstance].uptimeString characterDelay:0.008];
+		[self animateLabel:[TaskManager sharedInstance].outputString withCharacterDelay:0.008];
 
 	});
 
-	self.settingsButton =  [UIButton buttonWithType:UIButtonTypeCustom];
+	self.settingsButton = [UIButton new];
 	self.settingsButton.tintColor = [ColorManager sharedInstance].accentColor;
-	[self.settingsButton setImage : [UIImage systemImageNamed:@"gear"] forState:UIControlStateNormal];
-	[self.settingsButton addTarget : self action:@selector(didTapSettingsButton) forControlEvents:UIControlEventTouchUpInside];
+	[self.settingsButton setImage : [UIImage systemImageNamed:@"gear"] forState: UIControlStateNormal];
+	[self.settingsButton addTarget : self action:@selector(didTapSettingsButton) forControlEvents: UIControlEventTouchUpInside];
 
-	UIBarButtonItem *settingsButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.settingsButton];
+	UIBarButtonItem *settingsButtonItem = [[UIBarButtonItem alloc] initWithCustomView: self.settingsButton];
 	self.navigationItem.rightBarButtonItem = settingsButtonItem;
+
+	[self updateAccentColors];
 
 }
 
@@ -123,7 +134,15 @@
 }
 
 
-- (void)animateLabelShowText:(NSString *)newText characterDelay:(NSTimeInterval)delay {
+- (void)didTapSettingsButton {
+
+	SettingsVC *settingsVC = [SettingsVC new];
+	[self presentViewController:settingsVC animated:YES completion:nil];	
+
+}
+
+
+- (void)animateLabel:(NSString *)newText withCharacterDelay:(NSTimeInterval)delay {
 
 	// https://stackoverflow.com/questions/11686642/letter-by-letter-animation-for-uilabel
 
@@ -144,27 +163,55 @@
 }
 
 
-- (void)launchTask {
+- (NSString *)setUptimeText {
 
-	[[TaskManager sharedInstance] launchDarwinTask];
-	[[TaskManager sharedInstance] launchUptimeTask];
+	[[TaskManager sharedInstance] launchTaskWithArguments:@[@"-c", @"uptime"]];
 
-	if(![UserDefaultsManager sharedInstance].switchState)
+	NSString *uptimeString = [TaskManager sharedInstance].outputString;
 
-		self.darwinLabel.text = nil;
-
-	else
-
-		self.darwinLabel.text = [TaskManager sharedInstance].darwinString;
-
-	self.uptimeLabel.text = [TaskManager sharedInstance].uptimeString;
+	return uptimeString;
 
 }
 
 
-- (void)didTapSettingsButton {
+// MARK: - NSNotificationCenter
 
-	[self presentViewController:self.settingsVC animated:YES completion:nil];	
+- (void)setDarwinText {
+
+	[[UserDefaultsManager sharedInstance] loadSwitchState];
+
+	BOOL state = [UserDefaultsManager sharedInstance].switchState;
+
+	if(!state) {
+
+		self.darwinLabel.text = nil;
+		return;
+
+	}
+
+	[[TaskManager sharedInstance] launchTaskWithArguments:@[@"-c", @"uname -a"]];
+
+	NSString *darwinString = [TaskManager sharedInstance].outputString;
+
+	self.darwinLabel.text = darwinString;
+
+}
+
+
+- (void)updateAccentColors {
+
+	self.darwinLabel.textColor = [ColorManager sharedInstance].accentColor;
+	self.uptimeLabel.textColor = [ColorManager sharedInstance].accentColor;
+	self.settingsButton.tintColor = [ColorManager sharedInstance].accentColor;
+
+}
+
+
+// MARK: - NSTimer
+
+- (void)updateUptimeText {
+
+	self.uptimeLabel.text = [self setUptimeText];
 
 }
 

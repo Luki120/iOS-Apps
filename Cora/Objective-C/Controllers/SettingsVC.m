@@ -21,14 +21,7 @@
 
 	self = [super initWithNibName:aNib bundle:aBundle];
 
-	if(self) {
-
-		[[UserDefaultsManager sharedInstance] loadAccentColor];
-
-		[self setupUI];
-		[self setupPicker];
-
-	}
+	if(self) [self setupUI];
 
 	return self;
 
@@ -58,7 +51,7 @@
 	[super traitCollectionDidChange:previousTraitCollection];
 
 	/*--- for some reason systemBackgroundColor is gray when presenting
-	the view controller, and I want black so I do it here manually with
+	the view controller as a sheet, and I want black so I do it here manually for
 	both dark and light mode support :skull: ---*/
 
 	self.view.backgroundColor = kUserInterfaceStyle ? UIColor.blackColor : UIColor.whiteColor;
@@ -74,6 +67,8 @@
 		also I was picky and wanted to use layout guides. In the Swift version
 		I used a table view ---*/
 
+	[[UserDefaultsManager sharedInstance] loadAccentColor];
+
 	containerGuide = [UILayoutGuide new];
 	[self.view addLayoutGuide:containerGuide];
 
@@ -81,7 +76,7 @@
 	[self.view addLayoutGuide:buttonContainerGuide];
 
 	darwinLabel = [UILabel new];
-	darwinLabel.font = [UIFont fontWithName:@"Courier" size:15.5];
+	darwinLabel.font = [UIFont fontWithName:@"Courier" size:15];
 	darwinLabel.text = @"Print Darwin Information";
 	darwinLabel.textColor = [ColorManager sharedInstance].accentColor;
 	darwinLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -90,15 +85,15 @@
 	commandSwitch = [UISwitch new];
 	commandSwitch.onTintColor = [ColorManager sharedInstance].accentColor;
 	commandSwitch.translatesAutoresizingMaskIntoConstraints = NO;
-	[commandSwitch addTarget : self action:@selector(switchChanged:) forControlEvents:UIControlEventValueChanged];
+	[commandSwitch addTarget : self action:@selector(switchChanged) forControlEvents:UIControlEventValueChanged];
 	[self.view addSubview:commandSwitch];
 
 	accentButton = [UIButton new];
-	accentButton.titleLabel.font = [UIFont fontWithName:@"Courier" size:15.5];
+	accentButton.titleLabel.font = [UIFont fontWithName:@"Courier" size:15];
 	accentButton.translatesAutoresizingMaskIntoConstraints = NO;
 	[accentButton setTitle : @"Change Accent Color" forState:UIControlStateNormal];
 	[accentButton setTitleColor : [ColorManager sharedInstance].accentColor forState:UIControlStateNormal];
-	[accentButton addTarget : self action:@selector(presentColorPickerController) forControlEvents:UIControlEventTouchUpInside];		
+	[accentButton addTarget : self action:@selector(didTapAccentButton) forControlEvents:UIControlEventTouchUpInside];		
 	[self.view addSubview:accentButton];
 
 	indicatorView = [UIView new];
@@ -132,11 +127,13 @@
 
 	copyrightLabel = [UILabel new];
 	copyrightLabel.font = [UIFont fontWithName:@"Courier" size:10];
-	copyrightLabel.text = @"2021 © Luki120";
+	copyrightLabel.text = @"2022 © Luki120";
 	copyrightLabel.alpha = 0.5;
 	copyrightLabel.textColor = [ColorManager sharedInstance].accentColor;
 	copyrightLabel.textAlignment = NSTextAlignmentCenter;
 	[stackView addArrangedSubview:copyrightLabel];
+
+	[self setupPicker];
 
 }
 
@@ -180,12 +177,14 @@
 	[indicatorView.heightAnchor constraintEqualToConstant : 30].active = YES;
 
 	[stackView.centerXAnchor constraintEqualToAnchor : self.view.centerXAnchor].active = YES;
-	[stackView.topAnchor constraintEqualToAnchor : buttonContainerGuide.bottomAnchor constant : 50].active = YES;
+	[stackView.bottomAnchor constraintEqualToAnchor : guide.bottomAnchor constant : - 20].active = YES;
 
 }
 
 
-- (void)switchChanged:(UISwitch *)sender {
+// MARK: - Selectors
+
+- (void)switchChanged {
 
 	[[UserDefaultsManager sharedInstance] saveSwitchState];
 
@@ -194,12 +193,25 @@
 }
 
 
-- (void)presentColorPickerController {
+- (void)didTapAccentButton {
 
 	[self presentViewController:pickerController animated:YES completion:nil];
 
 }
 
+
+- (void)didTapSourceCodeButton {
+
+	NSURL *url = [NSURL URLWithString:@"https://github.com/Luki120/iOS-Apps/tree/main/Cora"];
+
+	SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url];
+	safariViewController.delegate = self;
+	[self presentViewController:safariViewController animated:YES completion:nil];
+
+}
+
+
+// MARK: - UIColorPickerViewControllerDelegate
 
 - (void)colorPickerViewControllerDidSelectColor:(UIColorPickerViewController *)colorPicker {
 
@@ -218,18 +230,9 @@
 	self.rootVC.uptimeLabel.textColor = [ColorManager sharedInstance].accentColor;
 	self.rootVC.settingsButton.tintColor = [ColorManager sharedInstance].accentColor;
 
+	[NSNotificationCenter.defaultCenter postNotificationName:@"updateAccentColors" object:nil];
+
 	[[UserDefaultsManager sharedInstance] saveAccentColor];
-
-}
-
-
-- (void)didTapSourceCodeButton {
-
-	NSURL *url = [NSURL URLWithString:@"https://github.com/Luki120/iOS-Apps/tree/main/Cora"];
-
-	SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url];
-	safariViewController.delegate = self;
-	[self presentViewController:safariViewController animated:YES completion:nil];
 
 }
 
