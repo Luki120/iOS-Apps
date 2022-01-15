@@ -1,11 +1,10 @@
 ARCHS = arm64 arm64e
 TARGET := iphone:clang:latest:latest
-
 INSTALL_TARGET_PROCESSES = Cora
 
 APPLICATION_NAME = Cora
 
-Cora_FILES = Core/AppDelegate.m Core/main.m Controllers/SettingsVC.m Controllers/UPTRootVC.m Managers/ColorManager.m Managers/TaskManager.m Managers/UserDefaultsManager.m
+Cora_FILES = $(wildcard Core/*.m) $(wildcard Controllers/*.m) $(wildcard Managers/*.m)
 Cora_CFLAGS = -fobjc-arc
 Cora_FRAMEWORKS = UIKit CoreGraphics
 Cora_CODESIGN_FLAGS = -Sentitlements.plist
