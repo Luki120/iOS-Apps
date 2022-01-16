@@ -4,13 +4,9 @@ import SafariServices
 
 final class SettingsVC: UITableViewController {
 
-	private let cellIdentifier = "Cell"
-
-	private let uptRootVC = UPTRootVC()
-
 	private let accentLabel: UILabel = {
 		let label = UILabel()
-		label.font = UIFont(name: "Courier", size: 15.5)
+		label.font = UIFont(name: "Courier", size: 15)
 		label.text = "Change Accent Color"
 		label.textAlignment = .center
 		label.numberOfLines = 0
@@ -20,7 +16,7 @@ final class SettingsVC: UITableViewController {
 
 	private let darwinLabel: UILabel = {
 		let label = UILabel()
-		label.font = UIFont(name: "Courier", size: 15.5)
+		label.font = UIFont(name: "Courier", size: 15)
 		label.text = "Print Darwin Information" 
 		label.textAlignment = .center
 		label.numberOfLines = 0
@@ -67,11 +63,12 @@ final class SettingsVC: UITableViewController {
 		let label = UILabel()
 		label.alpha = 0.5
 		label.font = UIFont(name: "Courier", size: 10)
-		label.text = "2021 © Luki120"
+		label.text = "2022 © Luki120"
 		label.textAlignment = .center
 		return label
 	}()
 
+	private let uptRootVC = UPTRootVC()
 	private let colorPicker = UIColorPickerViewController()
 
 	required init?(coder aDecoder: NSCoder) {
@@ -82,14 +79,11 @@ final class SettingsVC: UITableViewController {
 
 		super.init(nibName: nil, bundle: nil)
 
-		UserDefaultsManager.sharedInstance.loadAccentColor()
+		setupUI()
 
-		tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
+		tableView.register(UITableViewCell.self, forCellReuseIdentifier: "VanillaCell")
 
 		GlobalManager.sharedInstance.commandSwitch.addTarget(self, action: #selector(switchStateChanged), for: .valueChanged)
-
-		setupUI()
-		setupPicker()
 
 	}
 
@@ -103,12 +97,13 @@ final class SettingsVC: UITableViewController {
 	override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
 
 		super.traitCollectionDidChange(previousTraitCollection)
-
 		tableView.backgroundColor = traitCollection.userInterfaceStyle == .dark ? .black : .white
 
 	}
 
 	private func setupUI() {
+
+		UserDefaultsManager.sharedInstance.loadAccentColor()
 
 		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
 		GlobalManager.sharedInstance.commandSwitch.onTintColor = ColorManager.sharedInstance.accentColor
@@ -121,6 +116,9 @@ final class SettingsVC: UITableViewController {
 
 		tableView.separatorStyle = .none
 
+		setupPicker()
+		setupStackView()
+
 	}
 
 	private func setupPicker() {
@@ -131,6 +129,21 @@ final class SettingsVC: UITableViewController {
 
 	}
 
+	private func setupStackView() {
+
+		view.addSubview(stackView)
+		stackView.addArrangedSubview(sourceCodeButton)
+		stackView.addArrangedSubview(copyrightLabel)
+
+		let guide = view.safeAreaLayoutGuide
+
+		stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+		stackView.bottomAnchor.constraint(equalTo: guide.bottomAnchor, constant: -20).isActive = true
+
+	}
+
+	// MARK: - Actions
+
 	@objc private func switchStateChanged() {
 
 		UserDefaultsManager.sharedInstance.saveSwitchState()
@@ -139,17 +152,37 @@ final class SettingsVC: UITableViewController {
 
 	}
 
+	@objc private func didTapSourceCodeButton() {
+
+		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Cora")
+
+		guard let theURL = url else {
+			return
+		}
+
+		let safariVC = SFSafariViewController(url: theURL)
+		safariVC.delegate = self
+		safariVC.modalPresentationStyle = .pageSheet
+		present(safariVC, animated: true, completion: nil)
+
+	}
+
+}
+
+
+extension SettingsVC {
+
 	// MARK: - Table View Data Source
 
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-		return 3
+		return 2
 
 	}
 
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 
-		let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
+		let cell = tableView.dequeueReusableCell(withIdentifier: "VanillaCell", for: indexPath)
 
 		cell.selectionStyle = .none
 		cell.backgroundColor = .clear
@@ -180,15 +213,6 @@ final class SettingsVC: UITableViewController {
 				indicatorView.widthAnchor.constraint(equalToConstant: 30).isActive = true
 				indicatorView.heightAnchor.constraint(equalToConstant: 30).isActive = true
 
-			case 2:
-
-				cell.contentView.addSubview(stackView)
-				stackView.addArrangedSubview(sourceCodeButton)
-				stackView.addArrangedSubview(copyrightLabel)
-
-				stackView.centerXAnchor.constraint(equalTo: cell.contentView.centerXAnchor).isActive = true
-				stackView.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor).isActive = true
-
 			default: break
 
 		}
@@ -196,6 +220,11 @@ final class SettingsVC: UITableViewController {
 		return cell
 
 	}
+
+}
+
+
+extension SettingsVC {
 
 	// MARK: - Table View Delegate
 
@@ -214,19 +243,12 @@ final class SettingsVC: UITableViewController {
 
 	}
 
-	override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-
-		if indexPath.row == 2 { return 120 }
-
-		return 44
-
-	}
-
 }
+
 
 extension SettingsVC: SFSafariViewControllerDelegate, UIColorPickerViewControllerDelegate {
 
-	// MARK: - Delegate Methods
+	// MARK: - UIColorPickerViewControllerDelegate
 
 	func colorPickerViewControllerDidSelectColor(_ viewController: UIColorPickerViewController) {
 
@@ -240,31 +262,14 @@ extension SettingsVC: SFSafariViewControllerDelegate, UIColorPickerViewControlle
 
 		sourceCodeButton.setTitleColor(ColorManager.sharedInstance.accentColor, for: .normal)
 		copyrightLabel.textColor = ColorManager.sharedInstance.accentColor
-		
+
 		uptRootVC.darwinLabel.textColor = ColorManager.sharedInstance.accentColor
 		uptRootVC.uptimeLabel.textColor = ColorManager.sharedInstance.accentColor
 		uptRootVC.settingsButton.tintColor = ColorManager.sharedInstance.accentColor	
 
-		/*--- for some reason the colors on the main page didn't update instantly,
-		so notifications it is, :bthishowitis: ---*/
-
-		NotificationCenter.default.post(name: Notification.Name("updateAccentColor"), object: nil)
+		NotificationCenter.default.post(name: Notification.Name("updateAccentColors"), object: nil)
 
 		UserDefaultsManager.sharedInstance.saveAccentColor()
-
-	}
-
-	@objc private func didTapSourceCodeButton() {
-
-		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Cora")
-
-		guard let theURL = url else {
-			return
-		}
-
-		let safariVC = SFSafariViewController(url: theURL)
-		safariVC.delegate = self
-		present(safariVC, animated: true, completion: nil)
 
 	}
 
