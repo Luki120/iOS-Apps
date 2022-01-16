@@ -4,7 +4,7 @@ INSTALL_TARGET_PROCESSES = Cora
 
 APPLICATION_NAME = Cora
 
-Cora_FILES = Core/AppDelegate.swift Controllers/SettingsVC.swift Controllers/UPTRootVC.swift Managers/ColorManager.swift Managers/GlobalManager.swift Managers/UserDefaultsManager.swift Managers/TaskManager.swift
+Cora_FILES = $(wildcard Core/*.swift) $(wildcard Controllers/*.swift) $(wildcard Managers/*.swift)
 Cora_FRAMEWORKS = UIKit CoreGraphics
 Cora_CODESIGN_FLAGS = -Sentitlements.plist
 Cora_SWIFT_BRIDGING_HEADER = Bridging-Headers/Cora-Bridging-Header.h
