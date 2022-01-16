@@ -4,7 +4,7 @@ import UIKit
 final class UPTRootVC: UIViewController {
 
 	let settingsButton: UIButton = {
-		let button = UIButton(type: .custom)
+		let button = UIButton()
 		button.setImage(UIImage(systemName: "gear"), for: .normal)
 		return button
 	}()
@@ -37,20 +37,36 @@ final class UPTRootVC: UIViewController {
 
 		super.init(nibName: nil, bundle: nil)
 
-		UserDefaultsManager.sharedInstance.loadAccentColor()
-
+		setupDefaults()
 		setupUI()
-		launchChosenTask()
-		animateUptimeLabel()
-		updateAccentColor()
+		setupObservers()
 
 		settingsButton.addTarget(self, action: #selector(didTapSettingsButton), for: .touchUpInside)
 
-		NotificationCenter.default.removeObserver(self)
-		NotificationCenter.default.addObserver(self, selector: #selector(launchChosenTask), name: Notification.Name("launchChosenTask"), object: nil)
-		NotificationCenter.default.addObserver(self, selector: #selector(updateAccentColor), name: Notification.Name("updateAccentColor"), object: nil)
+		Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(updateUptimeText), userInfo: nil, repeats: true)
 
-		Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(launchChosenTask), userInfo: nil, repeats: true)
+	}
+
+	private func setupDefaults() {
+
+		UserDefaultsManager.sharedInstance.loadAccentColor()
+		UserDefaultsManager.sharedInstance.loadSwitchState()
+
+		guard let switchState = UserDefaultsManager.sharedInstance.switchState else {
+			return
+		}
+
+		guard switchState else { return }
+
+		setDarwinText()
+
+	}
+
+	private func setupObservers() {
+
+		NotificationCenter.default.removeObserver(self)
+		NotificationCenter.default.addObserver(self, selector: #selector(setDarwinText), name: Notification.Name("launchChosenTask"), object: nil)
+		NotificationCenter.default.addObserver(self, selector: #selector(updateAccentColors), name: Notification.Name("updateAccentColors"), object: nil)
 
 	}
 
@@ -77,12 +93,17 @@ final class UPTRootVC: UIViewController {
 
 	private func setupUI() {
 
-		view.addSubview(darwinLabel)
 		view.addSubview(uptimeLabel)
+		view.addSubview(darwinLabel)
 		view.addSubview(settingsButton)
+
+		uptimeLabel.text = setUptimeText()
+		animateUptimeLabel()
 
 		let settingsButtonItem = UIBarButtonItem(customView: settingsButton)
 		navigationItem.rightBarButtonItem = settingsButtonItem
+
+		updateAccentColors()
 
 	}
 
@@ -123,13 +144,20 @@ final class UPTRootVC: UIViewController {
 
 	}
 
+	@objc private func didTapSettingsButton() {
+
+		let settingsVC = SettingsVC()
+		present(settingsVC, animated: true)
+
+	}
+
 	private func animateUptimeLabel() {
 
 		uptimeLabel.text = ""
-		let finalText = TaskManager.sharedInstance.uptimeString
+		let finalText = TaskManager.sharedInstance.outputString ?? ""
 		var charIndex = 0.0
 
-		for letter in finalText ?? "" {
+		for letter in finalText {
 			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { timer in
 				self.uptimeLabel.text?.append(letter)
 			}
@@ -138,28 +166,40 @@ final class UPTRootVC: UIViewController {
 
 	}
 
-	@objc private func launchChosenTask() {
+	private func setUptimeText() -> String {
 
-		TaskManager.sharedInstance.launchDarwinTask()
-		TaskManager.sharedInstance.launchUptimeTask()
+		TaskManager.sharedInstance.launchTask(withArguments: ["-c", "uptime"])
+
+		let uptimeString = TaskManager.sharedInstance.outputString ?? ""
+
+		return uptimeString
+
+	}
+
+	// MARK: - NSNotificationCenter
+
+	@objc private func setDarwinText() {
+
+		UserDefaultsManager.sharedInstance.loadSwitchState()
 
 		guard let switchState = UserDefaultsManager.sharedInstance.switchState else {
 			return
 		}
 
-		if !switchState {
+		guard switchState else {
 			darwinLabel.text = nil
+			return 
 		}
 
-		else {
-			darwinLabel.text = TaskManager.sharedInstance.darwinString
-		}
+		TaskManager.sharedInstance.launchTask(withArguments: ["-c", "uname -a"])
 
-		uptimeLabel.text = TaskManager.sharedInstance.uptimeString
+		let darwinString = TaskManager.sharedInstance.outputString ?? ""
+
+		darwinLabel.text = darwinString
 
 	}
 
-	@objc private func updateAccentColor() {
+	@objc private func updateAccentColors() {
 
  		darwinLabel.textColor = ColorManager.sharedInstance.accentColor
 		uptimeLabel.textColor = ColorManager.sharedInstance.accentColor
@@ -167,10 +207,11 @@ final class UPTRootVC: UIViewController {
 
 	}
 
-	@objc private func didTapSettingsButton() {
+	// MARK: - NSTimer
 
-		let settingsVC = SettingsVC()
-		present(settingsVC, animated: true)
+	@objc private func updateUptimeText() {
+
+		uptimeLabel.text = setUptimeText()
 
 	}
 
