@@ -3,9 +3,9 @@
 
 @implementation SecondVC {
 
-	int counter;
+	NSInteger counter;
+	UILabel *counterLabel;
 	UILabel *hiddenLabel;
-	UITextField *textField;
 
 }
 
@@ -21,7 +21,7 @@
 		[self setupUI];
 
 		/*--- create notifications observers, aka the magic :fr:
-		this observers are listeners, they'll be waiting and listening in this case
+		observers are listeners, they'll be waiting and listening in this case
 		for the notification called "fireNotificationDone". Once a notification with that name
 		fires, the observers will tell self to call the receiveNotification function
 		where our fancy code will get executed ---*/
@@ -63,14 +63,15 @@
 
 - (void)setupUI {
 
-	textField = [UITextField new];
-	textField.enabled = NO;
-	textField.placeholder = @":peek:";
-	textField.textAlignment = NSTextAlignmentCenter;
-	textField.layer.cornerCurve = kCACornerCurveContinuous;
-	textField.layer.cornerRadius = 20;
-	textField.translatesAutoresizingMaskIntoConstraints = NO;
-	[self.view addSubview:textField];
+	counterLabel = [UILabel new];
+	counterLabel.text = [NSString stringWithFormat:@"%ld", counter];
+	counterLabel.backgroundColor = [UIColor randomColor];
+	counterLabel.layer.cornerCurve = kCACornerCurveContinuous;
+	counterLabel.layer.cornerRadius = 20;
+	counterLabel.layer.masksToBounds = YES;
+	counterLabel.textAlignment = NSTextAlignmentCenter;
+	counterLabel.translatesAutoresizingMaskIntoConstraints = NO;
+	[self.view addSubview: counterLabel];
 
 	hiddenLabel = [UILabel new];
 	hiddenLabel.text = @"The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff";
@@ -80,7 +81,7 @@
 	hiddenLabel.textAlignment = NSTextAlignmentCenter;
 	hiddenLabel.numberOfLines = 0; // infinite
 	hiddenLabel.translatesAutoresizingMaskIntoConstraints = NO;
-	[self.view addSubview:hiddenLabel];
+	[self.view addSubview: hiddenLabel];
 
 }
 
@@ -94,25 +95,25 @@
 
 	NSDictionary *views = @{
 
-		@"textField": textField, 
+		@"counterLabel": counterLabel, 
 		@"hiddenLabel": hiddenLabel,
 		@"superview": self.view
 
 	};
 
-	NSString *formatTextFieldCenterX = @"V:[textField]-(<=1)-[superview]";
-	NSString *formatTextFieldCenterY = @"H:[textField]-(<=1)-[superview]";
-	NSString *formatTextFieldWidth = @"H:[textField(==150)]";
-	NSString *formatTextFieldHeight = @"V:[textField(==40)]";
+	NSString *formatCounterLabelCenterX = @"V:[counterLabel]-(<=1)-[superview]";
+	NSString *formatCounterLabelCenterY = @"H:[counterLabel]-(<=1)-[superview]";
+	NSString *formatCounterLabelWidth = @"H:[counterLabel(==150)]";
+	NSString *formatCounterLabelHeight = @"V:[counterLabel(==40)]";
 
 	NSString *formatLabelBottom = [NSString stringWithFormat:@"V:[hiddenLabel]-%d-|", safeInsetsBottom];
 	NSString *formatLabelCenterX = @"V:[hiddenLabel]-(<=1)-[superview]";
 	NSString *formatLabelLeadingTrailing = @"H:|-10-[hiddenLabel]-10-|";
 
-	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatTextFieldCenterX options:NSLayoutFormatAlignAllCenterX metrics:nil views:views]];
-	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatTextFieldCenterY options:NSLayoutFormatAlignAllCenterY metrics:nil views:views]];
-	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatTextFieldWidth options:0 metrics:nil views:views]];
-	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatTextFieldHeight options:0 metrics:nil views:views]];
+	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatCounterLabelCenterX options:NSLayoutFormatAlignAllCenterX metrics:nil views:views]];
+	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatCounterLabelCenterY options:NSLayoutFormatAlignAllCenterY metrics:nil views:views]];
+	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatCounterLabelWidth options:0 metrics:nil views:views]];
+	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatCounterLabelHeight options:0 metrics:nil views:views]];
 
 	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatLabelBottom options:0 metrics:nil views:views]];
 	[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:formatLabelCenterX options:NSLayoutFormatAlignAllCenterX metrics:nil views:views]];
@@ -125,8 +126,8 @@
 
 	counter++;
 
-	textField.text = [NSString stringWithFormat:@"%d", counter];
-	textField.backgroundColor = [UIColor randomColor];
+	counterLabel.text = [NSString stringWithFormat:@"%ld", counter];
+	counterLabel.backgroundColor = [UIColor randomColor];
 
 	/*--- start one second timers when the conditions are met to wait 
 	and then start cross dissolving the labels' alpha from 0 to 1 and viceversa ---*/

@@ -12,13 +12,7 @@
 
 	self = [super initWithNibName:aNib bundle:aBundle];
 
-	if(self) {
-
-		// Custom initialization
-
-		[self setupUI];
-
-	}
+	if(self) [self setupUI];
 
 	return self;
 
@@ -48,13 +42,23 @@
 
 	magicButton = [UIButton new];
 	magicButton.titleLabel.font = [UIFont systemFontOfSize:15];
-	magicButton.backgroundColor = UIColor.systemIndigoColor;
-	magicButton.layer.cornerCurve = kCACornerCurveContinuous;
-	magicButton.layer.cornerRadius = 20;
 	magicButton.translatesAutoresizingMaskIntoConstraints = NO;
-	[magicButton setTitle : @"Tap me and switch tabs to see magic" forState:UIControlStateNormal];
-	[magicButton addTarget : self action:@selector(notificationSender:) forControlEvents:UIControlEventTouchUpInside];
+	[magicButton setTitle : @"Tap me and switch tabs to see magic" forState: UIControlStateNormal];
+	[magicButton addTarget : self action:@selector(didTapMagicButton) forControlEvents: UIControlEventTouchUpInside];
 	[self.view addSubview:magicButton];
+
+	UIColor *firstColor = [UIColor colorWithRed:0.74 green:0.78 blue:0.98 alpha:1.0];
+	UIColor *secondColor = [UIColor colorWithRed:0.77 green:0.69 blue:0.91 alpha:1.0];
+	NSArray *gradientColors = [NSArray arrayWithObjects:(id)firstColor.CGColor, (id)secondColor.CGColor, nil];
+
+	CAGradientLayer *gradient = [CAGradientLayer layer];
+	gradient.frame = CGRectMake(0,0,260,40);
+	gradient.colors = gradientColors;
+	gradient.startPoint = CGPointMake(0,0); // upper left
+	gradient.endPoint = CGPointMake(1,1); // lower right
+	gradient.cornerCurve = kCACornerCurveContinuous;
+	gradient.cornerRadius = 20;
+	[magicButton.layer insertSublayer:gradient atIndex:0];
 
 }
 
@@ -81,7 +85,7 @@
 }
 
 
-- (void)notificationSender:(id)sender {
+- (void)didTapMagicButton {
 
 	[NSNotificationCenter.defaultCenter postNotificationName:@"fireNotificationDone" object:nil];
 
