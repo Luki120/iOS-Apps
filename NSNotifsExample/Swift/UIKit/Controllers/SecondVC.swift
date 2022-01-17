@@ -19,31 +19,27 @@ final class SecondVC: UIViewController {
 	however in Objective-C this is required,
 	so it'd be like this:
 
-	int counter = 0;
-
-	---*/
+	int counter = 0; ---*/
 
 	private var counter = 0
 
-	/*--- instantiate UITextField and UILabel so we can access all 
+	/*--- instantiate UILabels so we can access all 
 	of it's properties and create our views ---*/
 
-	private let textField: UITextField = {
-		var textField = UITextField()
-		textField = UITextField()
-		textField.isEnabled = false
-		textField.placeholder = ":peek:"
-		textField.textAlignment = .center
-		textField.layer.cornerCurve = .continuous
-		textField.layer.cornerRadius = 20
-		textField.translatesAutoresizingMaskIntoConstraints = false
-		return textField
+	private let counterLabel: UILabel = {
+		var label = UILabel()
+		label.textAlignment = .center
+		label.layer.cornerCurve = .continuous
+		label.layer.cornerRadius = 20
+		label.layer.masksToBounds = true
+		label.translatesAutoresizingMaskIntoConstraints = false
+		return label
 	}()
 
 	private let hiddenLabel: UILabel = {
 		let label = UILabel()
 		label.text = "The power of Notifications :fr: Learn them, embrace them, and use them to make awesome stuff"
-		label.font = UIFont.systemFont(ofSize:18)
+		label.font = UIFont.systemFont(ofSize: 18)
 		label.alpha = 0
 		label.textColor = .systemPurple
 		label.textAlignment = .center
@@ -65,6 +61,9 @@ final class SecondVC: UIViewController {
 		// call our setupUI method, yes it's called method here because it's within the scope of our class
 
 		setupUI()
+
+		counterLabel.text = String(counter)
+		counterLabel.backgroundColor = UIColor.randomColor()
 
 		/*--- create notifications observers, aka the magic :fr:
 		observers are listeners, they'll be waiting and listening in this case
@@ -100,14 +99,14 @@ final class SecondVC: UIViewController {
 
 	private func setupUI() {
 
-		view.addSubview(textField)
+		view.addSubview(counterLabel)
 		view.addSubview(hiddenLabel)
 
 	}
 
 	private func layoutUI() {
 
-		let safeInsetsBottom = view.safeAreaInsets.bottom
+		let safeInsetsBottom = view.safeAreaInsets.bottom + 15
 
 		// proper UILayout
 
@@ -121,26 +120,26 @@ final class SecondVC: UIViewController {
 		we want to constrain ---*/
 
 		let views = [
-		
-			"textField": textField,
+
+			"counterLabel": counterLabel,
 			"hiddenLabel": hiddenLabel,
 			"superview": view
-		
+
 		]
 
-		let formatTextFieldWidth = "H:[textField(==150)]"
-		let formatTextFieldHeight = "V:[textField(==40)]"
-		let formatTextFieldCenterX = "V:[superview]-(<=1)-[textField]"
-		let formatTextFieldCenterY = "H:[superview]-(<=1)-[textField]"
+		let formatCounterLabelWidth = "H:[counterLabel(==150)]"
+		let formatCounterLabelHeight = "V:[counterLabel(==40)]"
+		let formatCounterLabelCenterX = "V:[superview]-(<=1)-[counterLabel]"
+		let formatCounterLabelCenterY = "H:[superview]-(<=1)-[counterLabel]"
 
-		let formatLabelBottom = "V:[hiddenLabel]-\(safeInsetsBottom + 15)-|"
+		let formatLabelBottom = "V:[hiddenLabel]-\(safeInsetsBottom)-|"
 		let formatLabelCenterX = "V:[superview]-(<=1)-[hiddenLabel]"
 		let formatLabelLeadingTrailing = "H:|-10-[hiddenLabel]-10-|"
 
-		let widthConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldWidth, options: [], metrics: nil, views: views)
-		let heightConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldHeight, options: [], metrics: nil, views: views)
-		let centerXConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldCenterX, options: .alignAllCenterX, metrics: nil, views: views)
-		let centerYConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatTextFieldCenterY, options: .alignAllCenterY, metrics: nil, views: views)
+		let widthConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatCounterLabelWidth, options: [], metrics: nil, views: views)
+		let heightConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatCounterLabelHeight, options: [], metrics: nil, views: views)
+		let centerXConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatCounterLabelCenterX, options: .alignAllCenterX, metrics: nil, views: views)
+		let centerYConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatCounterLabelCenterY, options: .alignAllCenterY, metrics: nil, views: views)
 
 		let labelBottomConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatLabelBottom, options: [], metrics: nil, views: views)
 		let labelCenterXConstraint = NSLayoutConstraint.constraints(withVisualFormat: formatLabelCenterX, options: .alignAllCenterX, metrics: nil, views: views)
@@ -178,8 +177,8 @@ final class SecondVC: UIViewController {
 
 		// cast our counter value to a string, since it's an integer
 
-		textField.text = String(counter)
-		textField.backgroundColor = UIColor.randomColor()
+		counterLabel.text = String(counter)
+		counterLabel.backgroundColor = UIColor.randomColor()
 
 		/*--- start one second timers when the conditions are met to wait 
 		and then start cross dissolving the labels' alpha from 0 to 1 and viceversa ---*/
@@ -200,7 +199,7 @@ final class SecondVC: UIViewController {
 
 	@objc private func fadeIn() {
 
-		UIView.animate(withDuration: 0.5, delay: 0.3, options: UIView.AnimationOptions.transitionCrossDissolve, animations: { () -> Void in
+		UIView.animate(withDuration: 0.5, delay: 0.3, options: UIView.AnimationOptions.transitionCrossDissolve, animations: {
 
 			/*--- unlike Objective-C, where you need the keyword self
 			to access properties, Swift has very rare few cases for it,
@@ -214,11 +213,11 @@ final class SecondVC: UIViewController {
 
 	@objc private func fadeOut() {
 
-		UIView.animate(withDuration: 0.5, delay: 0.3, options: UIView.AnimationOptions.transitionCrossDissolve, animations: { () -> Void in
+		UIView.animate(withDuration: 0.5, delay: 0.3, options: UIView.AnimationOptions.transitionCrossDissolve, animations: {
 
 			self.hiddenLabel.alpha = 0
 
-		}, completion: {(finished)-> Void in // this a closure I think, something I haven't learned about yet
+		}, completion: { finished in
 
 			self.hiddenLabel.isHidden = true // hide our label after the animation finishes so it doesn't reappear
 

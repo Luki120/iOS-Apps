@@ -9,13 +9,24 @@ final class FirstVC: UIViewController {
 	private let magicButton: UIButton = {
 		let button = UIButton()
 		button.setTitle("Tap me and switch tabs to see magic", for: .normal)
-		button.backgroundColor = .systemIndigo
 		button.titleLabel?.font = UIFont.systemFont(ofSize: 15)
-		button.layer.cornerCurve = .continuous
-		button.layer.cornerRadius = 20
 		button.translatesAutoresizingMaskIntoConstraints = false
-		button.addTarget(self, action:#selector(notificationSender), for: .touchUpInside)
+		button.addTarget(self, action:#selector(didTapMagicButton), for: .touchUpInside)
 		return button
+	}()
+
+	private let buttonGradientLayer: CAGradientLayer = {
+		let gradientLayer = CAGradientLayer()
+		let firstColor = UIColor(red: 0.74, green: 0.78, blue: 0.98, alpha: 1.0)
+		let secondColor = UIColor(red: 0.77, green: 0.69, blue: 0.91, alpha: 1.0)
+		let gradientColors = [firstColor.cgColor, secondColor.cgColor]
+		gradientLayer.colors = gradientColors
+		gradientLayer.frame = CGRect(x: 0, y: 0, width: 260, height: 40)
+		gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+		gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+		gradientLayer.cornerCurve = .continuous
+		gradientLayer.cornerRadius = 20
+		return gradientLayer
 	}()
 
  	required init?(coder aDecoder: NSCoder) {
@@ -53,6 +64,7 @@ final class FirstVC: UIViewController {
 	private func setupUI() {
 
 		view.addSubview(magicButton)
+		magicButton.layer.insertSublayer(buttonGradientLayer, at: 0)
 
 	}
 
@@ -79,12 +91,12 @@ final class FirstVC: UIViewController {
 	/*--- we use @objc because "selector" is an Objective-C concept only,
 	so we need to make it visible to the Objective-C runtime ---*/
 
-	@objc private func notificationSender() {
+	@objc private func didTapMagicButton() {
 
 		// fire the notification when clicking the button
 
 		NotificationCenter.default.post(name: Notification.Name("fireNotificationDone"), object: nil)
-		
+
 	}
 
 }

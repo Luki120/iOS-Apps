@@ -3,16 +3,6 @@ import UIKit
 
 final class TabBarVC : UITabBarController {
 
-	// instantiate our view controllers, would be something like this in objC --> [FirstVC new];
-
-	let firstVC = FirstVC()
-	let secondVC = SecondVC()
-
-	// create our navigation controllers
-
-	lazy var firstNav = UINavigationController(rootViewController: firstVC)
-	lazy var secondNav = UINavigationController(rootViewController: secondVC)
-
 	required init?(coder aDecoder: NSCoder) {
 
 	    super.init(coder: aDecoder)
@@ -22,6 +12,16 @@ final class TabBarVC : UITabBarController {
 	init() {
 
 		super.init(nibName: nil, bundle: nil)
+
+		// instantiate our view controllers, would be something like this in objC --> [FirstVC new];
+
+		let firstVC = FirstVC()
+		let secondVC = SecondVC()
+
+		// create our navigation controllers
+
+		let firstNav = UINavigationController(rootViewController: firstVC)
+		let secondNav = UINavigationController(rootViewController: secondVC)
 
 		// give our navigation bar titles
 
@@ -45,19 +45,9 @@ final class TabBarVC : UITabBarController {
 
 		// do any additional setup after loading the view, typically from a nib.
 
-		// customization
-
-		firstNav.navigationBar.shadowImage = UIImage()
-		firstNav.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-
-		secondNav.navigationBar.shadowImage = UIImage()
-		secondNav.navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-
+		tabBar.tintColor = .systemPurple
 		tabBar.barTintColor = .systemBackground
 		tabBar.isTranslucent = false
-
-		tabBar.tintColor = .systemPurple
-
 		tabBar.clipsToBounds = true
 		tabBar.layer.borderWidth = 0
 
