@@ -65,6 +65,7 @@ struct ContentView: View {
 							Slider(value: $sliderValue, in: 0...25, onEditingChanged: { _ in
 
 								passwordText = randomString(length: Int(sliderValue))
+								fadePasswordText.toggle()
 
 							})
 							.frame(width: UIScreen.main.bounds.width - 100, height: 44)
@@ -81,7 +82,7 @@ struct ContentView: View {
 
 				}
 				.toolbar {
-					
+
 					ToolbarItem(placement: .navigationBarTrailing) {
 
 						HStack {
@@ -113,30 +114,6 @@ struct ContentView: View {
 
 		}
 		.accentColor(Color.auroraColor)
-
-	}
-
-	private func randomString(length: Int) -> String {
-
- 		var characters = "abcdefghijklmnopqrstuvwxyz"
-
-		let numbers = "0123456789"
-		let specialCharacters = "!@#$%^&*()_+-=[]{}|;':,./<>?`~"
-		let uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-		if allowUppercaseCharacters { characters += uppercaseCharacters }
-
-		if allowNumberCharacters { characters += numbers }
-
-		if allowSpecialCharacters { characters += specialCharacters }
-
-		else if !allowUppercaseCharacters && !allowNumberCharacters && !allowSpecialCharacters {
-
-			characters = "abcdefghijklmnopqrstuvwxyz"
-
-		}
-
-		return String((0..<length).map { _ in characters.randomElement() ?? "c" })
 
 	}
 
@@ -191,6 +168,30 @@ struct ContentView: View {
 
 		}
 		.background(colorScheme == .dark ? Color.black : Color.white)
+
+	}
+
+	private func randomString(length: Int) -> String {
+
+ 		var characters = "abcdefghijklmnopqrstuvwxyz"
+
+		let numbers = "0123456789"
+		let specialCharacters = "!@#$%^&*()_+-=[]{}|;':,./<>?`~"
+		let uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+		if allowUppercaseCharacters { characters += uppercaseCharacters }
+
+		if allowNumberCharacters { characters += numbers }
+
+		if allowSpecialCharacters { characters += specialCharacters }
+
+		else if !allowUppercaseCharacters && !allowNumberCharacters && !allowSpecialCharacters {
+
+			characters = "abcdefghijklmnopqrstuvwxyz"
+
+		}
+
+		return String((0..<length).map { _ in characters.randomElement() ?? "c" })
 
 	}
 
