@@ -154,7 +154,7 @@ final class SettingsVC: UITableViewController {
 
 	@objc private func didTapSourceCodeButton() {
 
-		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Cora")
+		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Released/Cora")
 
 		guard let theURL = url else {
 			return

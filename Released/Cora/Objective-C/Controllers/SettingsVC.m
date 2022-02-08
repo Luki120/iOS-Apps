@@ -202,7 +202,7 @@
 
 - (void)didTapSourceCodeButton {
 
-	NSURL *url = [NSURL URLWithString:@"https://github.com/Luki120/iOS-Apps/tree/main/Cora"];
+	NSURL *url = [NSURL URLWithString:@"https://github.com/Luki120/iOS-Apps/tree/main/Released/Cora"];
 
 	SFSafariViewController *safariViewController = [[SFSafariViewController alloc] initWithURL:url];
 	safariViewController.delegate = self;

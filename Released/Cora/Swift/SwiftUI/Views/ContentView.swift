@@ -15,7 +15,7 @@ struct ContentView: View {
 
 	@StateObject private var taskManager = TaskManager()
 
-	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Cora"
+	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Released/Cora"
 	private let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
 	init() {
