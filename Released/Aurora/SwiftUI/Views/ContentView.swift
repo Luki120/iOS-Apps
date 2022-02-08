@@ -13,7 +13,7 @@ struct ContentView: View {
 	@State private var shouldShowSafariSheet = false
 	@State private var shouldShowSettingsSheet = false
 
-	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Aurora"
+	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Released/Aurora"
 
 	init() {
  		UINavigationBar.appearance().shadowImage = UIImage()

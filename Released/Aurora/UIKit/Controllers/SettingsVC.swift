@@ -195,7 +195,7 @@ extension SettingsVC: SFSafariViewControllerDelegate {
 
 	@objc private func didTapSourceCodeButton() {
 
-		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Aurora")
+		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Released/Aurora")
 
 		guard let sourceCodeURL = url else {
 			return
