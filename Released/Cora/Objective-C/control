@@ -1,8 +1,0 @@
-Package: me.luki.cora
-Name: Cora
-Version: 0.9.0
-Architecture: iphoneos-arm
-Description: See your uptime and device information in less clicks
-Maintainer: Luki
-Author: Luki
-Section: Utilities
