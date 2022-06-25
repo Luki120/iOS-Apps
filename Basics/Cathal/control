@@ -1,0 +1,9 @@
+Package: me.luki.cathal
+Name: Cathal
+Version: 0.9.0
+Architecture: iphoneos-arm
+Description: An awesome SwiftUI application!
+Maintainer: Luki
+Author: Luki
+Section: Utilities
+Depends: ${LIBSWIFT}
