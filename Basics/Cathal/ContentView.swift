@@ -16,7 +16,6 @@ struct ContentView: View {
 	@State private var countTo = 3600
 	@State private var finishedBreak = false
 	@State private var isActive = true
-	@State private var isCounting = false
 	@State private var isTimerRunning = false
 	@State private var pomodoroCount = 0
 	@State private var shouldShowToast = false
@@ -35,7 +34,6 @@ struct ContentView: View {
 			Button("Start") {
 				guard !isTimerRunning else { return }
 
-				isCounting = true
 				isTimerRunning = true
 				pomodoroCount += 1
 				self.timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
@@ -50,7 +48,7 @@ struct ContentView: View {
 
 			guard isActive else { return }
 
-			if isCounting && counter < countTo { counter += 1 }
+			if isTimerRunning && counter < countTo { counter += 1 }
 			else if counter == countTo && !finishedBreak {
 				counter = 0
 				counter += 1
@@ -66,7 +64,6 @@ struct ContentView: View {
 				counter = 0
 				countTo = 3600
 				finishedBreak = false
-				isCounting = false
 				isTimerRunning = false
 				UIApplication.shared.isIdleTimerDisabled = false
 			}
