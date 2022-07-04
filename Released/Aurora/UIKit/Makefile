@@ -4,7 +4,7 @@ INSTALL_TARGET_PROCESSES = Aurora
 
 APPLICATION_NAME = Aurora
 
-Aurora_FILES = Core/AppDelegate.swift Controllers/AuroraRootVC.swift Controllers/AuroraVC.swift Controllers/SettingsVC.swift Managers/ColorManager.swift
+Aurora_FILES = Core/AppDelegate.swift Controllers/AuroraRootVC.swift Controllers/AuroraVC.swift Controllers/SettingsVC.swift
 Aurora_FRAMEWORKS = UIKit CoreGraphics
 
 include $(THEOS)/makefiles/common.mk
