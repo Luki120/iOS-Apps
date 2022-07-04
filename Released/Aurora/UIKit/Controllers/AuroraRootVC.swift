@@ -9,13 +9,10 @@ final class AuroraRootVC: UITabBarController {
 	private lazy var secondNav = UINavigationController(rootViewController: dummyVC)
 
 	required init?(coder aDecoder: NSCoder) {
-
 		super.init(coder: aDecoder)
-
 	}
 
 	init() {
-
 		super.init(nibName: nil, bundle: nil)
 
 		auroraVC.title = "Aurora"
@@ -25,7 +22,6 @@ final class AuroraRootVC: UITabBarController {
 		secondNav.tabBarItem = UITabBarItem(title: "Vault", image: UIImage(systemName: "lock.fill"), tag: 1)
 
 		viewControllers = [firstNav, secondNav]
-
 	}
 
 	override func viewDidLoad() {
@@ -33,7 +29,6 @@ final class AuroraRootVC: UITabBarController {
 		super.viewDidLoad()
 
 		// Do any additional setup after loading the view, typically from a nib.
-
 		view.backgroundColor = .systemBackground
 
 		UINavigationBar.appearance().shadowImage = UIImage()
