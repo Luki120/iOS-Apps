@@ -9,11 +9,10 @@ struct ContentView: View {
 	@Environment(\.colorScheme) private var colorScheme
 
 	@State private var passwordText = ""
-	@State private var fadePasswordText = false
 	@State private var shouldShowSafariSheet = false
 	@State private var shouldShowSettingsSheet = false
 
-	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Released/Aurora"
+	private let kSourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Released/Aurora"
 
 	init() {
  		UINavigationBar.appearance().shadowImage = UIImage()
@@ -33,40 +32,28 @@ struct ContentView: View {
 				VStack {
 
 					VStack(spacing: 5) {
-
-						if !fadePasswordText {
-
-							Text(passwordText)
-								.modifier(LabelStyle())
-								.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
-
-						}
-
-						else if fadePasswordText {
-
-							Text(passwordText)
-								.modifier(LabelStyle())
-								.onAppear { self.passwordText = randomString(length: Int(sliderValue)) }
-
-						}
+ 
+						AttributedLabelView(string: passwordText)
+							.frame(width: 248.5, height: 26.5)
+							.transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
+							.id("passwordText" + passwordText)
 
 						Button("Regenerate password") {
 							passwordText = randomString(length: Int(sliderValue))
-							fadePasswordText.toggle()
 						}
-						.modifier(ButtonStyle())
+						.customButton()
 						.padding(.top, 10)
+						.onAppear {
+							passwordText = randomString(length: Int(sliderValue))
+						}
 
 						Button("Copy password") { UIPasteboard.general.string = passwordText }
-							.modifier(ButtonStyle())
+							.customButton()
 
 						HStack {
 
-							Slider(value: $sliderValue, in: 0...25, onEditingChanged: { _ in
-
+							Slider(value: $sliderValue, in: 10...25, onEditingChanged: { _ in
 								passwordText = randomString(length: Int(sliderValue))
-								fadePasswordText.toggle()
-
 							})
 							.frame(width: UIScreen.main.bounds.width - 100, height: 44)
 
@@ -101,13 +88,12 @@ struct ContentView: View {
 				}
 				.navigationBarTitle("Aurora", displayMode: .inline)
 				.padding(20)
+
 			}
 			.navigationViewStyle(StackNavigationViewStyle())
 			.tabItem {
-
 				Image(systemName: "house.fill")
 					.font(.system(size: 22))
-
 			}
 
 			VaultView()
@@ -128,19 +114,14 @@ struct ContentView: View {
 			Form {
 
 				Section(header: Text("Settings")) {
-
 					Group {
-
 						Toggle("A-Z", isOn: $allowUppercaseCharacters)
 						Toggle("0-9", isOn: $allowNumberCharacters)
 						Toggle("!@#$%^&*", isOn: $allowSpecialCharacters)
-
 					}
 					.toggleStyle(SwitchToggleStyle(tint: Color.auroraColor))
 					.listRowBackground(colorScheme == .dark ? Color.black : Color.white)
-
 				}
-
 			}
 			.padding(.top, 22)
 
@@ -153,7 +134,7 @@ struct ContentView: View {
 							.font(.system(size: 15.5))
 							.foregroundColor(.gray)
 							.sheet(isPresented: $shouldShowSafariSheet) {
-								SafariView(url: URL(string: sourceCodeURL))
+								SafariView(url: URL(string: kSourceCodeURL))
 							}
 
 					Text("2022 © Luki120")
@@ -180,15 +161,10 @@ struct ContentView: View {
 		let uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 		if allowUppercaseCharacters { characters += uppercaseCharacters }
-
 		if allowNumberCharacters { characters += numbers }
-
 		if allowSpecialCharacters { characters += specialCharacters }
-
 		else if !allowUppercaseCharacters && !allowNumberCharacters && !allowSpecialCharacters {
-
 			characters = "abcdefghijklmnopqrstuvwxyz"
-
 		}
 
 		return String((0..<length).map { _ in characters.randomElement() ?? "c" })
@@ -202,20 +178,67 @@ private struct SafariView: UIViewControllerRepresentable {
 
 	let url: URL?
 
-	func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
-
+	func makeUIViewController(context: Context) -> SFSafariViewController {
 		let fallbackURL = URL(string: "https://github.com/Luki120")! // this 100% exists so it's safe
-
-		guard let url = url else {
-			return SFSafariViewController(url: fallbackURL)
-		}
-
+		guard let url = url else { return SFSafariViewController(url: fallbackURL) }
 		return SFSafariViewController(url: url)
-
 	}
 
-	func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
+	func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 
+}
+
+
+private struct AttributedLabelView: UIViewRepresentable {
+
+	let string: String
+	private let numbersAttribute = [NSAttributedString.Key.foregroundColor: UIColor.systemTeal]
+	private let symbolsAttribute = [NSAttributedString.Key.foregroundColor: UIColor.salmonColor]
+
+	func makeUIView(context: Context) -> UILabel {
+		let label = UILabel()
+		label.font = .systemFont(ofSize: 22)
+		label.numberOfLines = 1
+		label.textAlignment = .center
+		label.adjustsFontSizeToFitWidth = true
+		return label
+	}
+
+	func updateUIView(_ uiView: UILabel, context: Context) {
+		uiView.attributedText = attributedString(
+			string: string,
+			numbersAttribute: numbersAttribute,
+			symbolsAttribute: symbolsAttribute
+		)
+	}
+
+	// MARK: Attributed String
+
+	private func findRangesInString(_ string: String, withPattern pattern: String) -> [NSRange] {
+		let nsString = string as NSString
+		let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+		let matches = regex?.matches(in: string, options: .withoutAnchoringBounds, range: NSMakeRange(0, nsString.length))
+		return matches?.map { $0.range } ?? []
+	}
+
+	private func attributedString(
+		string: String,
+		numbersAttribute: [NSAttributedString.Key : Any],
+		symbolsAttribute: [NSAttributedString.Key : Any]
+	) -> NSAttributedString {
+
+		let symbolRanges = findRangesInString(string, withPattern: "[!@#$%^&*()_+-=\\[\\\\\\]{}|;':,./<>?`~]+")
+		let numberRanges = findRangesInString(string, withPattern: "[0-9]+")
+
+		let attributedString = NSMutableAttributedString(string: string)
+
+		for range in symbolRanges {
+			attributedString.addAttributes(symbolsAttribute, range: range)
+		}
+		for range in numberRanges {
+			attributedString.addAttributes(numbersAttribute, range: range)
+		}
+		return attributedString
 	}
 
 }
