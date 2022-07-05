@@ -2,20 +2,28 @@ import UIKit
 import SafariServices
 
 
+protocol SettingsVCDelegate: AnyObject {
+	func settingsVCSwitchStateDidChange()
+}
+
+
 final class SettingsVC: UITableViewController {
 
 	private let cellIdentifier = "Cell"
 
+	weak var delegate: SettingsVCDelegate?
 	private var settingsOptions = ["A-Z", "0-9", "!@#$%^&*"]
 	private var aSwitch = UISwitch()
 
-	private let footerStackView: UIStackView = {
+	private lazy var footerStackView: UIStackView = {
 		let stackView = UIStackView()
 		stackView.axis = .vertical
-		stackView.alignment = .center
 		stackView.distribution = .fill
 		stackView.spacing = 5
 		stackView.translatesAutoresizingMaskIntoConstraints = false
+		view.addSubview(stackView)
+		stackView.addArrangedSubview(sourceCodeButton)
+		stackView.addArrangedSubview(copyrightLabel)
 		return stackView
 	}()
 
@@ -32,6 +40,7 @@ final class SettingsVC: UITableViewController {
 		label.font = .systemFont(ofSize: 10)
 		label.text = "2022 © Luki120"
 		label.textColor = .gray
+		label.textAlignment = .center
 		return label
 	}()
 
@@ -53,13 +62,19 @@ final class SettingsVC: UITableViewController {
 		tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
 		sourceCodeButton.addTarget(self, action: #selector(didTapSourceCodeButton), for: .touchUpInside)
 
-		view.addSubview(footerStackView)
-		footerStackView.addArrangedSubview(sourceCodeButton)
-		footerStackView.addArrangedSubview(copyrightLabel)
-
 		footerStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
 		footerStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30).isActive = true
+	}
 
+	private func configureSwitches() {
+		for _ in 0..<settingsOptions.count {
+			switch aSwitch.tag {
+				case 0: aSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState1"), animated: true)
+				case 1: aSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState2"), animated: true)
+				case 2: aSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState3"), animated: true)
+				default: break
+			}
+		}
 	}
 
 }
@@ -69,13 +84,10 @@ extension SettingsVC {
 	// MARK: Table View Data Source
 
 	override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
 		return settingsOptions.count
-
 	}
 
 	override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
 		let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
 
 		cell.selectionStyle = .none
@@ -85,33 +97,17 @@ extension SettingsVC {
 		aSwitch = UISwitch()
 		aSwitch.tag = indexPath.row
 		aSwitch.onTintColor = UIColor.auroraColor
-		aSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)
+		aSwitch.addTarget(self, action: #selector(switchStateDidChange(_:)), for: .valueChanged)
 
 		configureSwitches()
 
 		cell.accessoryView = aSwitch
 
 		return cell
-
 	}
 
 	override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		return "Settings"
-	}
-
-	private func configureSwitches() {
-
-		for _ in 0..<settingsOptions.count {
-
-			switch aSwitch.tag {
-				case 0: aSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState1"), animated: true)
-				case 1: aSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState2"), animated: true)
-				case 2: aSwitch.setOn(UserDefaults.standard.bool(forKey: "switchState3"), animated: true)
-				default: break
-			}
-
-		}
-
 	}
 
 	// MARK: Table View Delegate
@@ -130,21 +126,17 @@ extension SettingsVC {
 
 extension SettingsVC: SFSafariViewControllerDelegate {
 
-	@objc private func switchValueChanged(_ sender: UISwitch) {
-
+	@objc private func switchStateDidChange(_ sender: UISwitch) {
 		switch sender.tag {
 			case 0: UserDefaults.standard.set(sender.isOn, forKey: "switchState1")
 			case 1: UserDefaults.standard.set(sender.isOn, forKey: "switchState2")
 			case 2: UserDefaults.standard.set(sender.isOn, forKey: "switchState3")
 			default: break
 		}
-
-		NotificationCenter.default.post(name: Notification.Name("switchValueChanged"), object: nil)
-
+		delegate?.settingsVCSwitchStateDidChange()
 	}
 
 	@objc private func didTapSourceCodeButton() {
-
 		let url = URL(string: "https://github.com/Luki120/iOS-Apps/tree/main/Released/Aurora")
 
 		guard let sourceCodeURL = url else { return }
@@ -152,7 +144,6 @@ extension SettingsVC: SFSafariViewControllerDelegate {
 		safariVC.delegate = self
 		safariVC.modalPresentationStyle = .pageSheet
 		present(safariVC, animated: true, completion: nil)
-
 	}
 
 }

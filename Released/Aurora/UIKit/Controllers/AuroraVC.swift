@@ -25,6 +25,8 @@ final class AuroraVC: UIViewController {
 	private var randomLabel: UILabel!
 	private var sliderValueLabel: UILabel!
 
+	private var settingsVC = SettingsVC()
+
 	private let numbersAttribute = [NSAttributedString.Key.foregroundColor: UIColor.systemTeal]
 	private let symbolsAttribute = [NSAttributedString.Key.foregroundColor: UIColor.salmonColor]
 
@@ -37,10 +39,8 @@ final class AuroraVC: UIViewController {
 	init() {
 		super.init(nibName: nil, bundle: nil)
 		setupUI()
-		NotificationCenter.default.addObserver(self, selector: #selector(setAttributedString), name: Notification.Name("switchValueChanged"), object: nil)
+		settingsVC.delegate = self
 	}
-
-	deinit { NotificationCenter.default.removeObserver(self) }
 
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -139,12 +139,7 @@ final class AuroraVC: UIViewController {
 
 	}
 
-	@objc private func didTapSettingsButton() {
-
-		let vc = SettingsVC()
-		present(vc, animated: true, completion: nil)
-
-	}
+	@objc private func didTapSettingsButton() { present(settingsVC, animated: true, completion: nil) }
 
 	// MARK: Attributed String
 
@@ -175,11 +170,11 @@ final class AuroraVC: UIViewController {
 		return attributedString
 	}
 
-	@objc private func setAttributedString() {
+	private func setAttributedString() {
   		let crossDissolve = CATransition()
-		crossDissolve.type = CATransitionType.fade
+		crossDissolve.type = .fade
 		crossDissolve.duration = 0.5
-		crossDissolve.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+		crossDissolve.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 		randomLabel.layer.add(crossDissolve, forKey: nil)
 
 		randomLabel.attributedText = attributedString(
@@ -192,7 +187,7 @@ final class AuroraVC: UIViewController {
 	// MARK: Reusable
 
 	private func createButton(withTitle title: String, forSelector selector: Selector) -> UIButton {
-		let button = UIButton()
+		let button = UIButton(type: .system)
 		button.backgroundColor = UIColor.auroraColor
 		button.setTitle(title, for: .normal)
 		button.setTitleColor(.label, for: .normal)
@@ -224,6 +219,10 @@ final class AuroraVC: UIViewController {
 		view.heightAnchor.constraint(equalToConstant: 44).isActive = true
 	}
 
+}
+
+extension AuroraVC: SettingsVCDelegate {
+	func settingsVCSwitchStateDidChange() { setAttributedString() }
 }
 
 extension UIColor {
