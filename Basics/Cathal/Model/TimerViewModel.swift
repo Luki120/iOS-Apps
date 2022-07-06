@@ -18,9 +18,6 @@ final class TimerViewModel: ObservableObject {
 
 	@Published private(set) var shouldStartBreak = false
 
-	let sessionIntervals = ["1", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]
-	let breakIntervals = ["5", "10", "15", "20", "25", "30"]
-
 	func startTimer() {
 		startTimerWith(minutes, seconds, passingFlag: &isActive)
 	}
