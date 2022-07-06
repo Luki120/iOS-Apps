@@ -7,5 +7,3 @@ Maintainer: Luki
 Author: Luki
 Section: Utilities
 Depends: ${LIBSWIFT}
-Depiction: https://luki120.github.io/depictions/web/?p=me.luki.coraswift
-SileoDepiction: https://luki120.github.io/depictions/native/me.luki.coraswift/depiction.json
