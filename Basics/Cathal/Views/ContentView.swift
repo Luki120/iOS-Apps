@@ -26,17 +26,17 @@ struct ContentView: View {
 					Button("Start") {
 						timerViewModel.startNewTimer = true
 					}
-					.buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20, style: .continuous)))
+					.neumorphicButton()
 					.padding(.top, 20)
-					.disabled(timerViewModel.isActive == true || timerViewModel.shouldStartBreak == true)
-					.opacity(timerViewModel.isActive == true || timerViewModel.shouldStartBreak == true ? 0.5 : 1)
+					.disabled(timerViewModel.isActive || timerViewModel.shouldStartBreak)
+					.opacity(timerViewModel.isActive || timerViewModel.shouldStartBreak ? 0.5 : 1)
 
 					Button("Stop") {
 						timerViewModel.stopTimer()
 					}
-					.buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20, style: .continuous)))
-					.disabled(timerViewModel.isActive == false && timerViewModel.shouldStartBreak == false)
-					.opacity(timerViewModel.isActive == false && timerViewModel.shouldStartBreak == false ? 0.5 : 1)
+					.neumorphicButton()
+					.disabled(!timerViewModel.isActive && !timerViewModel.shouldStartBreak)
+					.opacity(!timerViewModel.isActive && !timerViewModel.shouldStartBreak ? 0.5 : 1)
 				}
 				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
 			}
@@ -60,7 +60,7 @@ struct ContentView: View {
 			.animation(.easeInOut, value: timerViewModel.startNewTimer)
 		)
 		.background(Color.neumorphicWhite)
-		.edgesIgnoringSafeArea(.all)
+		.ignoresSafeArea()
 		.preferredColorScheme(.light)
 		.onChange(of: scenePhase) { newPhase in
 			if timerViewModel.isActive {
@@ -71,7 +71,6 @@ struct ContentView: View {
 					let elapsedTime = Int(Date().timeIntervalSince(lastActiveTimestamp))
 					if timerViewModel.totalSeconds - Int(elapsedTime) <= 0 {
 						timerViewModel.isActive = false
-						timerViewModel.isFinished = true
 						timerViewModel.totalSeconds = 0
 					}
 					else { timerViewModel.totalSeconds -= elapsedTime }
@@ -79,21 +78,16 @@ struct ContentView: View {
 			}
 		}
 		.onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
-			if timerViewModel.isActive {
-				timerViewModel.updateTimer()
-			}
+			if timerViewModel.isActive { timerViewModel.updateTimer() }
 			else if !timerViewModel.isActive && timerViewModel.shouldStartBreak {
-				timerViewModel.updateTimerWith(
-					&timerViewModel.breakMinutes,
-					&timerViewModel.breakSeconds,
-					isInBreak: true
-				)
+				timerViewModel.updateBreakTimer()
 			}
 		}
 	}
 
 	@ViewBuilder
 	private func newTimerView() -> some View {
+		let min = timerViewModel.breakMinutes > 1 ? "mins" : "min"
 		VStack(spacing: 15) {
 			Text("Start new Pomodoro session")
 				.font(.system(size: 20))
@@ -101,20 +95,20 @@ struct ContentView: View {
 				.padding(.top, 10)
 
 			HStack {
-				Text("\(timerViewModel.minutes) min")
-					.reusableLabel()
- 					.contextMenu {
-						contextMenuOptionsFor(timerViewModel.sessionIntervals) { value in
-							timerViewModel.minutes = value
-						}
+				Group {
+					Button("\(timerViewModel.minutes) min") {
+						presentAlertVC(hintText: "60m") { text in
+							timerViewModel.minutes = Int(text) ?? 0
+						}					
 					}
-				Text("\(timerViewModel.breakMinutes) break min")
-					.reusableLabel()
- 					.contextMenu {
-						contextMenuOptionsFor(timerViewModel.breakIntervals) { value in
-							timerViewModel.breakMinutes = value
-						}
+					Button("\(timerViewModel.breakMinutes) \(min) break") {
+						presentAlertVC(hintText: "20m") { text in
+							timerViewModel.breakMinutes = Int(text) ?? 0
+						}					
 					}
+					.minimumScaleFactor(0.8)
+				}
+				.neumorphicButton()
 
 			}
 			Button("Confirm") {
@@ -125,7 +119,7 @@ struct ContentView: View {
 			.font(.system(size: 18))
 			.foregroundColor(.gray)
 			.padding(.horizontal, 30)
-			.buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20, style: .continuous)))
+			.neumorphicButton()
 			.disabled(timerViewModel.minutes == 0 || timerViewModel.breakMinutes == 0)
 			.opacity(timerViewModel.minutes == 0 || timerViewModel.breakMinutes == 0 ? 0.5 : 1)
 
@@ -135,36 +129,18 @@ struct ContentView: View {
 		.neumorphicStyle()
 	}
 
-	@ViewBuilder
-	private func contextMenuOptionsFor(_ session: [String], onClick: @escaping (Int) -> ()) -> some View {
-		ForEach(session, id: \.self) { value in
-			Button("\(value) min") {
-				onClick(Int(value) ?? 0)
-			}
-		}
+	private func presentAlertVC(hintText: String, primaryAction: @escaping(String) -> ()) {
+		uiKitAlertVC(
+			title: "Cathal",
+			message: "Start a new pomodoro session with a regular & a break interval",
+			hintText: hintText,
+			primaryTitle: "Confirm",
+			secondaryTitle: "Cancel",
+			primaryAction: primaryAction,
+			secondaryAction: {}
+		)
 	}
 }
-
-
-private struct ReusableLabel: ViewModifier {
-
-	func body(content: Content) -> some View {
-		content
-			.font(.system(size: 18))
-			.foregroundColor(.gray)
-			.padding(.horizontal, 20)
-			.padding(.vertical, 10)
-			.background(
-				Capsule(style: .continuous)
-					.fill(Color.neumorphicWhite)
-					.shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
-					.shadow(color: Color.white.opacity(0.7), radius: 10, x: -5, y: -5)
-			)
-
-	}
-
-}
-
 
 private struct RoundedCorner: Shape {
 
@@ -177,13 +153,11 @@ private struct RoundedCorner: Shape {
     }
 }
 
-
 extension Color {
 	static let firstColor = Color(red: 0.01, green: 0.67, blue: 0.69)
 	static let secondColor = Color(red: 0.00, green: 0.80, blue: 0.67)
 	static let neumorphicWhite = Color(red: 0.88, green: 0.88, blue: 0.92)
 }
-
 
 extension LinearGradient {
 	static let cathalGradient = LinearGradient(
@@ -205,18 +179,48 @@ extension LinearGradient {
 	}
 }
 
-
 private extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
 		clipShape(RoundedCorner(radius: radius, corners: corners))
     }
-	func neumorphicStyle() -> some View {
-		self.padding()
-		.frame(maxWidth: .infinity)
-		.background(Color.neumorphicWhite)
-		.cornerRadius(20, corners: [.topLeft, .topRight])
-		.shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
-		.shadow(color: Color.white.opacity(0.7), radius: 10, x: -5, y: -5)
+	func neumorphicButton() -> some View {
+		self
+			.buttonStyle(NeumorphicButton(shape: RoundedRectangle(cornerRadius: 20, style: .continuous)))
 	}
-	func reusableLabel() -> some View { modifier(ReusableLabel()) }
+	func neumorphicStyle() -> some View {
+		self
+			.padding()
+			.frame(maxWidth: .infinity)
+			.background(Color.neumorphicWhite)
+			.cornerRadius(20, corners: [.topLeft, .topRight])
+			.shadow(color: Color.black.opacity(0.2), radius: 10, x: 10, y: 10)
+			.shadow(color: Color.white.opacity(0.7), radius: 10, x: -5, y: -5)
+	}
+	func uiKitAlertVC(
+		title: String,
+		message: String,
+		hintText: String,
+		primaryTitle: String,
+		secondaryTitle: String,
+		primaryAction: @escaping(String) -> (),
+		secondaryAction: @escaping() -> ()) {
+
+			let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+			alertVC.overrideUserInterfaceStyle = .light
+			alertVC.addTextField { textField in
+				textField.placeholder = hintText
+				textField.keyboardType = .numberPad
+			}
+			alertVC.addAction(UIAlertAction(title: primaryTitle, style: .default) { _ in
+				primaryAction(alertVC.textFields?.first?.text ?? "")
+			})
+			alertVC.addAction(UIAlertAction(title: secondaryTitle, style: .cancel) { _ in
+				secondaryAction()
+			})
+			rootVC().present(alertVC, animated: true, completion: nil)
+
+	}
+	func rootVC() -> UIViewController {
+		UIApplication.shared.windows.first?.rootViewController ?? UIViewController()
+	}
 }

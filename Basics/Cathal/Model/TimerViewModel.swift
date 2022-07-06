@@ -16,10 +16,9 @@ final class TimerViewModel: ObservableObject {
 	@Published var totalSeconds = 0
 	@Published private(set) var totalStaticSeconds = 0
 
-	@Published var isFinished = false
 	@Published private(set) var shouldStartBreak = false
 
-	let sessionIntervals = ["15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]
+	let sessionIntervals = ["1", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]
 	let breakIntervals = ["5", "10", "15", "20", "25", "30"]
 
 	func startTimer() {
@@ -45,9 +44,12 @@ final class TimerViewModel: ObservableObject {
 		updateTimerWith(&minutes, &seconds, isInBreak: false)
 		if minutes == 0 && seconds == 0 {
 			isActive = false
-			isFinished = true
 			startTimerWith(breakMinutes, breakSeconds, passingFlag: &shouldStartBreak)
 		}
+	}
+
+	func updateBreakTimer() {
+		updateTimerWith(&breakMinutes, &breakSeconds, isInBreak: true)
 	}
 
 	private func startTimerWith(_ min: Int, _ secs: Int, passingFlag flag: inout Bool) {
@@ -59,7 +61,7 @@ final class TimerViewModel: ObservableObject {
 		startNewTimer = false
 	}
 
-	func updateTimerWith(_ min: inout Int, _ secs: inout Int, isInBreak: Bool) {
+	private func updateTimerWith(_ min: inout Int, _ secs: inout Int, isInBreak: Bool) {
 		progress = CGFloat(totalSeconds) / CGFloat(totalStaticSeconds)
 		progress = progress < 0 ? 0 : progress
 		totalSeconds -= 1
@@ -69,7 +71,6 @@ final class TimerViewModel: ObservableObject {
 		guard isInBreak else { return }
  		if min == 0 && secs == 0 {
 			isActive = false
-			isFinished = true
 			shouldStartBreak = false
 		}
 	}
