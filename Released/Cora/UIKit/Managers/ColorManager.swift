@@ -4,28 +4,17 @@ import UIKit
 final class ColorManager {
 
 	static let sharedInstance = ColorManager()
+	var accentColor = UIColor.green
 
-	var accentColor:UIColor = .green
-
-	init() {}
+	private init() {}
 
 	func loadInitialAccentColor() {
-
 		do {
-
 			let encodedData = try NSKeyedArchiver.archivedData(withRootObject: accentColor, requiringSecureCoding: false)
-			let defaultAccentColor:[String:Any] = ["accentColor": encodedData]
+			let defaultAccentColor = ["accentColor": encodedData]
 			UserDefaults.standard.register(defaults: defaultAccentColor)
-
 		}
- 
-		catch {
-
-			print("handling the fucking error so this shit lets me compile, \(error)")
-			return
-
-		}
-
+		catch { return }
 	}
 
 }

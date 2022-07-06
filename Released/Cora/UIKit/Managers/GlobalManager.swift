@@ -10,6 +10,6 @@ final class GlobalManager {
 		return theSwitch
 	}()
 
-	init() {}
+	private init() {}
 
 }

@@ -4,13 +4,11 @@ import Foundation
 final class TaskManager {
 
 	static let sharedInstance = TaskManager()
-
-	var outputString: String?
+	var outputString = ""
 
 	private init() {}
 
 	func launchTask(withArguments arguments: [String]) {
-
 		let pipe = Pipe()
 		let task = NSTask()
 
@@ -20,8 +18,7 @@ final class TaskManager {
 		task.launch()
 
 		let data = pipe.fileHandleForReading.readDataToEndOfFile()
-		outputString = String(data: data, encoding: .utf8)
-
+		outputString = String(data: data, encoding: .utf8) ?? ""
 	}
 
 }
