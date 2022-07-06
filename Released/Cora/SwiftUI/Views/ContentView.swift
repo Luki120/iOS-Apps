@@ -4,7 +4,7 @@ import SafariServices
 
 struct ContentView: View {
 
-	@AppStorage("accentColor") private var pickerColor:Color = .green
+	@AppStorage("accentColor") private var pickerColor = Color.green
 
 	@Environment(\.colorScheme) private var colorScheme
 
@@ -15,7 +15,7 @@ struct ContentView: View {
 
 	@StateObject private var taskManager = TaskManager()
 
-	private let sourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Released/Cora"
+	private let kSourceCodeURL = "https://github.com/Luki120/iOS-Apps/tree/main/Released/Cora"
 	private let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
 	init() {
@@ -31,35 +31,24 @@ struct ContentView: View {
 
 				Spacer()
 
-				Text(uptimeText)
-					.font(.custom("Courier", size: 16))
-					.foregroundColor(pickerColor)
-					.multilineTextAlignment(.center)
+				FadeLabelView(text: uptimeText, color: UIColor(pickerColor))
+					.frame(width: 300, height: 70)
 					.padding()
 					.onAppear {
 						setUptimeText()
-						animateUptimeLabel()
+						animateLabel()
 					}
 					.onReceive(timer) { _ in
- 						taskManager.launchTask(withArguments: ["-c", "uptime"])
-						uptimeText = taskManager.outputString ?? ""
+						setUptimeText()
 					}
 					.toolbar {
-
 						ToolbarItem(placement: .navigationBarTrailing) {
-
 							HStack {
-
 								Text("")
-
 								Button { shouldShowSettingsSheet.toggle() }
 									label: { Image(systemName: "gear") }
-										.font(.system(size: 10))
-
 							}
-
 						}
-
 					}
 					.sheet(isPresented: $shouldShowSettingsSheet) { settingsView }
 
@@ -69,7 +58,6 @@ struct ContentView: View {
 					.font(.custom("Courier", size: 12))
 					.foregroundColor(pickerColor)
 					.multilineTextAlignment(.center)
-					.padding()
 					.onAppear(perform: setDarwinText)
 
 			}
@@ -110,7 +98,7 @@ struct ContentView: View {
 						.opacity(0.5)
 						.foregroundColor(pickerColor)
 						.sheet(isPresented: $shouldShowSafariSheet) {
-							SafariView(url: URL(string: sourceCodeURL))
+							SafariView(url: URL(string: kSourceCodeURL))
 						}
 
 					Text("2022 © Luki120")
@@ -131,67 +119,70 @@ struct ContentView: View {
 	}
 
 	private func setUptimeText() {
-
 		taskManager.launchTask(withArguments: ["-c", "uptime"])
-
-		guard let uptimeString = taskManager.outputString else {
-			return
-		}
-
-		uptimeText = uptimeString
-
+		uptimeText = taskManager.outputString
 	}
 
 	private func setDarwinText() {
-
 		guard taskManager.shouldPrintDarwinInformation else { return }
 
 		taskManager.launchTask(withArguments: ["-c", "uname -a"])
-
-		guard let darwinString = taskManager.outputString else {
-			return
-		}			
-
-		darwinText = darwinString
-
+		darwinText = taskManager.outputString
 	}
 
-	private func animateUptimeLabel() {
-
+	private func animateLabel() {
 		uptimeText = ""
-		let finalText = taskManager.outputString ?? ""
+		let finalText = taskManager.outputString
 		var charIndex = 0.0
 
 		for letter in finalText {
-			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { timer in
-				self.uptimeText.append(letter)
+			Timer.scheduledTimer(withTimeInterval: 0.020 * charIndex, repeats: false) { _ in
+				uptimeText.append(letter)			
 			}
 			charIndex += 1
 		}
-
 	}
 
 }
 
+private struct FadeLabelView: UIViewRepresentable {
+
+	var text: String
+	var color: UIColor
+
+	func makeUIView(context: Context) -> UILabel {
+		let label = UILabel()
+		label.font = UIFont(name: "Courier", size: 16)
+		label.text = text
+		label.textColor = color
+		label.textAlignment = .center
+		label.numberOfLines = 0
+		label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+		return label
+	}
+
+	func updateUIView(_ uiView: UILabel, context: Context) {
+		let transition = CATransition()
+		transition.type = .fade
+		transition.duration = 0.5
+		transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+		uiView.layer.add(transition, forKey: nil)
+		uiView.text = text
+		uiView.textColor = color
+	}
+
+}
 
 private struct SafariView: UIViewControllerRepresentable {
 
 	let url: URL?
 
 	func makeUIViewController(context: Context) -> SFSafariViewController {
-
 		let fallbackURL = URL(string: "https://github.com/Luki120")! // this 100% exists so it's safe
-
-		guard let url = url else {
-			return SFSafariViewController(url: fallbackURL)
-		}
-
+		guard let url = url else { return SFSafariViewController(url: fallbackURL) }
 		return SFSafariViewController(url: url)
-
 	}
 
-	func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {
-
-	}
+	func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 
 }

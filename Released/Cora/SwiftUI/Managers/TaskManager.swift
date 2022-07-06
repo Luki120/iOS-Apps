@@ -5,11 +5,9 @@ import SwiftUI
 final class TaskManager: ObservableObject {
 
 	@AppStorage("switchState") var shouldPrintDarwinInformation = false
-
-	@Published var outputString: String?
+	@Published var outputString = ""
 
 	func launchTask(withArguments arguments: [String]) {
-
 		let pipe = Pipe()
 		let task = NSTask()
 
@@ -19,8 +17,7 @@ final class TaskManager: ObservableObject {
 		task.launch()
 
 		let data = pipe.fileHandleForReading.readDataToEndOfFile()
-		outputString = String(data: data, encoding: .utf8)
-
+		outputString = String(data: data, encoding: .utf8) ?? ""
 	}
 
 }
