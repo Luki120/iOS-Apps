@@ -1,4 +1,4 @@
-Package: me.luki.coraswiftui
+Package: me.luki.coraswift
 Name: Cora
 Version: 0.9.0
 Architecture: iphoneos-arm
@@ -7,5 +7,5 @@ Maintainer: Luki
 Author: Luki
 Section: Utilities
 Depends: ${LIBSWIFT}
-Depiction: https://luki120.github.io/depictions/web/?p=me.luki.coraswiftui
-SileoDepiction: https://luki120.github.io/depictions/native/me.luki.coraswiftui/depiction.json
+Depiction: https://luki120.github.io/depictions/web/?p=me.luki.coraswift
+SileoDepiction: https://luki120.github.io/depictions/native/me.luki.coraswift/depiction.json
