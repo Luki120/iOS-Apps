@@ -3,15 +3,10 @@ import SwiftUI
 
 struct ContentView: View {
 
-	/*--- even though the app is based on showing how
-	NSNotificationCenter works, I made a SwiftUI version
-	because first I didn't know theos supported it and also
-	because these property wrappers take care of all the work :TimPog ---*/
-
 	@AppStorage("counterCount") private var counter = 0
 
 	@State private var labelAlpha = 0.0
-	@State private var randomColor:Color = .randomColor
+	@State private var randomColor = Color.randomColor
 
 	private let firstColor = Color(red: 0.74, green: 0.78, blue: 0.98)
 	private let secondColor = Color(red: 0.77, green: 0.69, blue: 0.91)
@@ -34,9 +29,10 @@ struct ContentView: View {
 				}
 				.font(.system(size: 14))
 				.frame(width: 260, height: 40)
-				.buttonStyle(StaticButtonStyle())
+				.staticButtonStyle()
 				.background(
-					LinearGradient(gradient: Gradient(
+					LinearGradient(
+						gradient: Gradient(
 							colors: [firstColor, secondColor]
 						),
 						startPoint: .topLeading,
@@ -73,14 +69,10 @@ struct ContentView: View {
 				}
 				.onReceive(timer) { _ in fireTimer() }
 				.toolbar {
-
 					ToolbarItem(placement: .navigationBarTrailing) {
-
 						Button { counter = 0 }
 							label: { Image(systemName: "xmark.circle.fill") }
-
 					}
-
 				}
 
 			}
@@ -96,43 +88,30 @@ struct ContentView: View {
 	}
 
 	private func fireTimer() {
-
 		if counter == 14 {
-			withAnimation(.easeInOut(duration: 0.5), {
-				self.labelAlpha = 1
-			})
+			withAnimation(.easeInOut(duration: 0.5)) { self.labelAlpha = 1 }
 		}
-
 		else if counter == 15 {
-			withAnimation(.easeInOut(duration: 0.5), {
-				self.labelAlpha = 0
-			})
+			withAnimation(.easeInOut(duration: 0.5)) { self.labelAlpha = 0 }
 		}
 	}
 }
 
 
 private struct StaticButtonStyle: ButtonStyle {
-
-	func makeBody(configuration: Configuration) -> some View {
-
-		configuration.label
-
-	}
-
+	func makeBody(configuration: Configuration) -> some View { configuration.label }
 }
 
-
 private extension Color {
-
 	static var randomColor: Color {
-
 		let red = Double.random(in: 0...1)
 		let green = Double.random(in: 0...1)
 		let blue = Double.random(in: 0...1)
 
 		return Color(red: red, green: green, blue: blue)
-
 	}
+}
 
+private extension View {
+	func staticButtonStyle() -> some View { self.buttonStyle(StaticButtonStyle()) }
 }
