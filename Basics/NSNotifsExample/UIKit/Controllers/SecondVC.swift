@@ -136,7 +136,7 @@ final class SecondVC: UIViewController {
 		// credits: https://stackoverflow.com/a/54049893
 	}
 
-	/*--- we use @objc because "selector" to make it visible to the Objective-C runtime ---*/
+	/*--- we use @objc to make it visible to the Objective-C runtime ---*/
 	@objc private func receiveNotification() {
 		// start increasing the counter when the user presses the button
 		counter += 1
