@@ -3,12 +3,11 @@ import SwiftUI
 
 struct ContentView: View {
 
-	@StateObject var viewModel = WeatherViewModel()
+	@StateObject private var viewModel = WeatherViewModel()
 
 	var body: some View {
 
 		VStack {
-
 			Text(viewModel.name)
 				.font(.system(size: 30))
 
@@ -21,8 +20,8 @@ struct ContentView: View {
 			Text(viewModel.error)
 				.font(.system(size: 18))
 				.multilineTextAlignment(.center)
-
-		}.padding()
+		}
+		.padding()
 
 	}
 
