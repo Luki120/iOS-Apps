@@ -3,29 +3,27 @@ import SwiftUI
 
 final class TimerViewModel: ObservableObject {
 
-	@Published private(set) var progress: CGFloat = 1	
-	@Published private(set) var timerString = "00:00"
+	@Published var progress: CGFloat = 1
 	@Published var isActive = false
+	@Published var isBreakActive = false
 	@Published var startNewTimer = false
 
 	@Published var minutes = 0
 	@Published var seconds = 0
 	@Published var breakMinutes = 0
 	@Published var breakSeconds = 0
-
 	@Published var totalSeconds = 0
+
+	@Published private(set) var timerString = "00:00"
 	@Published private(set) var totalStaticSeconds = 0
 
-	@Published private(set) var shouldStartBreak = false
-
-	func startTimer() {
-		startTimerWith(minutes, seconds, passingFlag: &isActive)
-	}
+	func startTimer() { startTimerWith(minutes, seconds, passingFlag: &isActive) }
+	func startBreakTimer() { startTimerWith(breakMinutes, breakSeconds, passingFlag: &isBreakActive) }
 
 	func stopTimer() {
 		withAnimation {
 			isActive = false
-			shouldStartBreak = false
+			isBreakActive = false
 			minutes = 0
 			seconds = 0
 			breakMinutes = 0
@@ -39,15 +37,12 @@ final class TimerViewModel: ObservableObject {
 
 	func updateTimer() {
 		updateTimerWith(&minutes, &seconds, isInBreak: false)
-		if minutes == 0 && seconds == 0 {
-			isActive = false
-			startTimerWith(breakMinutes, breakSeconds, passingFlag: &shouldStartBreak)
-		}
+		guard minutes == 0 && seconds == 0 else { return }
+		isActive = false
+		startTimerWith(breakMinutes, breakSeconds, passingFlag: &isBreakActive)
 	}
 
-	func updateBreakTimer() {
-		updateTimerWith(&breakMinutes, &breakSeconds, isInBreak: true)
-	}
+	func updateBreakTimer() { updateTimerWith(&breakMinutes, &breakSeconds, isInBreak: true) }
 
 	private func startTimerWith(_ min: Int, _ secs: Int, passingFlag flag: inout Bool) {
 		withAnimation(.easeInOut(duration: 1.0)) { flag = true }
@@ -65,10 +60,12 @@ final class TimerViewModel: ObservableObject {
 		min = (totalSeconds / 60) % 60
 		secs = totalSeconds % 60
 		timerString = "\(min):\(secs < 10 ? "0" : "")\(secs)"
+
 		guard isInBreak else { return }
- 		if min == 0 && secs == 0 {
-			isActive = false
-			shouldStartBreak = false
-		}
+ 		guard min == 0 && secs == 0 else { return }
+
+		isActive = false
+		isBreakActive = false
+		progress = 1
 	}
 }

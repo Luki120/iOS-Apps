@@ -5,7 +5,7 @@ struct ContentView: View {
 
 	@Environment(\.scenePhase) private var scenePhase
 
-	@EnvironmentObject var timerViewModel: TimerViewModel
+	@EnvironmentObject private var timerViewModel: TimerViewModel
 
 	@State private var lastActiveTimestamp = Date()
 
@@ -28,15 +28,16 @@ struct ContentView: View {
 					}
 					.neumorphicButton()
 					.padding(.top, 20)
-					.disabled(timerViewModel.isActive || timerViewModel.shouldStartBreak)
-					.opacity(timerViewModel.isActive || timerViewModel.shouldStartBreak ? 0.5 : 1)
+					.disabled(timerViewModel.isActive || timerViewModel.isBreakActive)
+					.opacity(timerViewModel.isActive || timerViewModel.isBreakActive ? 0.5 : 1)
 
 					Button("Stop") {
 						timerViewModel.stopTimer()
 					}
 					.neumorphicButton()
-					.disabled(!timerViewModel.isActive && !timerViewModel.shouldStartBreak)
-					.opacity(!timerViewModel.isActive && !timerViewModel.shouldStartBreak ? 0.5 : 1)
+					.disabled(!timerViewModel.isActive && !timerViewModel.isBreakActive)
+					.opacity(!timerViewModel.isActive && !timerViewModel.isBreakActive ? 0.5 : 1)
+
 				}
 				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
 			}
@@ -63,15 +64,17 @@ struct ContentView: View {
 		.ignoresSafeArea()
 		.preferredColorScheme(.light)
 		.onChange(of: scenePhase) { newPhase in
-			if timerViewModel.isActive {
-				if newPhase == .background {
-					lastActiveTimestamp = Date()
-				}
+			if timerViewModel.isActive || timerViewModel.isBreakActive {
+				if newPhase == .background { lastActiveTimestamp = Date() }
 				else if newPhase == .active {
 					let elapsedTime = Int(Date().timeIntervalSince(lastActiveTimestamp))
 					if timerViewModel.totalSeconds - Int(elapsedTime) <= 0 {
 						timerViewModel.isActive = false
+						timerViewModel.progress = 1
+						timerViewModel.minutes = 0
+						timerViewModel.seconds = 0
 						timerViewModel.totalSeconds = 0
+						timerViewModel.startBreakTimer()
 					}
 					else { timerViewModel.totalSeconds -= elapsedTime }
 				}
@@ -79,7 +82,7 @@ struct ContentView: View {
 		}
 		.onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
 			if timerViewModel.isActive { timerViewModel.updateTimer() }
-			else if !timerViewModel.isActive && timerViewModel.shouldStartBreak {
+			else if !timerViewModel.isActive && timerViewModel.isBreakActive {
 				timerViewModel.updateBreakTimer()
 			}
 		}
@@ -97,14 +100,14 @@ struct ContentView: View {
 			HStack {
 				Group {
 					Button("\(timerViewModel.minutes) min") {
-						presentAlertVC(hintText: "60m") { text in
+						presentAlertVC(placeholder: "60m") { text in 
 							timerViewModel.minutes = Int(text) ?? 0
-						}					
+						}
 					}
 					Button("\(timerViewModel.breakMinutes) \(min) break") {
-						presentAlertVC(hintText: "20m") { text in
+						presentAlertVC(placeholder: "20m") { text in
 							timerViewModel.breakMinutes = Int(text) ?? 0
-						}					
+						}
 					}
 					.minimumScaleFactor(0.8)
 				}
@@ -129,15 +132,14 @@ struct ContentView: View {
 		.neumorphicStyle()
 	}
 
-	private func presentAlertVC(hintText: String, primaryAction: @escaping(String) -> ()) {
+	private func presentAlertVC(placeholder: String, primaryAction: @escaping(String) -> ()) {
 		uiKitAlertVC(
 			title: "Cathal",
 			message: "Start a new pomodoro session with a regular & a break interval",
-			hintText: hintText,
+			placeholder: placeholder,
 			primaryTitle: "Confirm",
 			secondaryTitle: "Cancel",
-			primaryAction: primaryAction,
-			secondaryAction: {}
+			primaryAction: primaryAction
 		)
 	}
 }
@@ -163,7 +165,7 @@ extension LinearGradient {
 	static let cathalGradient = LinearGradient(
 		gradient: Gradient(
 			colors: [
-				Color.secondColor,
+				.secondColor,
 				Color.secondColor
 					.opacity(0.5),
 				Color.secondColor
@@ -199,28 +201,25 @@ private extension View {
 	func uiKitAlertVC(
 		title: String,
 		message: String,
-		hintText: String,
+		placeholder: String,
 		primaryTitle: String,
 		secondaryTitle: String,
-		primaryAction: @escaping(String) -> (),
-		secondaryAction: @escaping() -> ()) {
+		primaryAction: @escaping(String) -> ()) {
 
 			let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
 			alertVC.overrideUserInterfaceStyle = .light
 			alertVC.addTextField { textField in
-				textField.placeholder = hintText
+				textField.placeholder = placeholder
 				textField.keyboardType = .numberPad
 			}
 			alertVC.addAction(UIAlertAction(title: primaryTitle, style: .default) { _ in
 				primaryAction(alertVC.textFields?.first?.text ?? "")
 			})
-			alertVC.addAction(UIAlertAction(title: secondaryTitle, style: .cancel) { _ in
-				secondaryAction()
-			})
-			rootVC().present(alertVC, animated: true, completion: nil)
+			alertVC.addAction(UIAlertAction(title: secondaryTitle, style: .default) { _ in })
+			rootVC.present(alertVC, animated: true, completion: nil)
 
 	}
-	func rootVC() -> UIViewController {
+	var rootVC: UIViewController {
 		UIApplication.shared.windows.first?.rootViewController ?? UIViewController()
 	}
 }

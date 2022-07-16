@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ProgressView: View {
 
-	@EnvironmentObject var timerViewModel: TimerViewModel
+	@EnvironmentObject private var timerViewModel: TimerViewModel
 
 	var body: some View {
 
@@ -20,7 +20,7 @@ struct ProgressView: View {
 					LinearGradient.cathalGradient,
 					style: StrokeStyle(lineWidth: 20, lineCap: .round, lineJoin: .round)
 				)
-				.shadow(color: Color.secondColor, radius: 5, x: 1, y: -4)
+				.shadow(color: .secondColor, radius: 5, x: 1, y: -4)
 				.frame(width: 150, height: 150)
 				.rotationEffect(.degrees(270))
 				.animation(.linear)
@@ -47,8 +47,8 @@ private struct FadeLabelView: UIViewRepresentable {
 	func updateUIView(_ uiView: UILabel, context: Context) {
 		let transition = CATransition()
 		transition.duration = 0.5
-		transition.type = CATransitionType.fade
-		transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
+		transition.type = .fade
+		transition.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
 		uiView.layer.add(transition, forKey: nil)
 
 		uiView.text = text
