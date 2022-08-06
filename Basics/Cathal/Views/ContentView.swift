@@ -49,12 +49,15 @@ struct ContentView: View {
 				Color.black
 					.opacity(timerViewModel.startNewTimer ? 0.25 : 0.0)
 					.onTapGesture {
+						let deadline = timerViewModel.minutes == 0 && timerViewModel.breakMinutes == 0 ? 0.0 : 0.25
+						DispatchQueue.main.asyncAfter(deadline: .now() + deadline) {
+							timerViewModel.startNewTimer = false
+						}
 						timerViewModel.minutes = 0
 						timerViewModel.breakMinutes = 0
-						timerViewModel.startNewTimer = false
 					}
 
-				newTimerView()
+				NewTimerView()
 					.frame(maxHeight: .infinity, alignment: .bottom)
 					.offset(y: timerViewModel.startNewTimer ? 0 : 400)
 			}
@@ -64,11 +67,12 @@ struct ContentView: View {
 		.ignoresSafeArea()
 		.preferredColorScheme(.light)
 		.onChange(of: scenePhase) { newPhase in
-			if timerViewModel.isActive || timerViewModel.isBreakActive {
-				if newPhase == .background { lastActiveTimestamp = Date() }
-				else if newPhase == .active {
+			guard timerViewModel.isActive || timerViewModel.isBreakActive else { return }
+			switch newPhase {
+				case .background: lastActiveTimestamp = Date()
+				case .active:
 					let elapsedTime = Int(Date().timeIntervalSince(lastActiveTimestamp))
-					if timerViewModel.totalSeconds - Int(elapsedTime) <= 0 {
+					if timerViewModel.totalSeconds - elapsedTime <= 0 {
 						timerViewModel.isActive = false
 						timerViewModel.progress = 1
 						timerViewModel.minutes = 0
@@ -77,7 +81,7 @@ struct ContentView: View {
 						timerViewModel.startBreakTimer()
 					}
 					else { timerViewModel.totalSeconds -= elapsedTime }
-				}
+				default: break
 			}
 		}
 		.onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
@@ -89,7 +93,7 @@ struct ContentView: View {
 	}
 
 	@ViewBuilder
-	private func newTimerView() -> some View {
+	private func NewTimerView() -> some View {
 		let min = timerViewModel.breakMinutes > 1 ? "mins" : "min"
 		VStack(spacing: 15) {
 			Text("Start new Pomodoro session")
@@ -104,15 +108,17 @@ struct ContentView: View {
 							timerViewModel.minutes = Int(text) ?? 0
 						}
 					}
+					.id("minutes" + String(timerViewModel.minutes))
 					Button("\(timerViewModel.breakMinutes) \(min) break") {
 						presentAlertVC(placeholder: "20m") { text in
 							timerViewModel.breakMinutes = Int(text) ?? 0
 						}
 					}
 					.minimumScaleFactor(0.8)
+					.id("breakMinutes" + String(timerViewModel.breakMinutes))
 				}
 				.neumorphicButton()
-
+				.transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
 			}
 			Button("Confirm") {
 				DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
@@ -125,6 +131,7 @@ struct ContentView: View {
 			.neumorphicButton()
 			.disabled(timerViewModel.minutes == 0 || timerViewModel.breakMinutes == 0)
 			.opacity(timerViewModel.minutes == 0 || timerViewModel.breakMinutes == 0 ? 0.5 : 1)
+			.animation(.easeInOut(duration: 0.5), value: timerViewModel.minutes > 0 && timerViewModel.breakMinutes > 0)
 
 		}
 		.padding()
@@ -207,6 +214,7 @@ private extension View {
 		primaryAction: @escaping(String) -> ()) {
 
 			let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+			alertVC.view.tintColor = UIColor(.firstColor)
 			alertVC.overrideUserInterfaceStyle = .light
 			alertVC.addTextField { textField in
 				textField.placeholder = placeholder
@@ -214,7 +222,7 @@ private extension View {
 			}
 			alertVC.addAction(UIAlertAction(title: primaryTitle, style: .default) { _ in
 				primaryAction(alertVC.textFields?.first?.text ?? "")
-			})
+			})	
 			alertVC.addAction(UIAlertAction(title: secondaryTitle, style: .default) { _ in })
 			rootVC.present(alertVC, animated: true, completion: nil)
 
