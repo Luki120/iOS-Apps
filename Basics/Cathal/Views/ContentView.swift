@@ -30,6 +30,7 @@ struct ContentView: View {
 					.padding(.top, 20)
 					.disabled(timerViewModel.isActive || timerViewModel.isBreakActive)
 					.opacity(timerViewModel.isActive || timerViewModel.isBreakActive ? 0.5 : 1)
+					.animation(.easeInOut(duration: 0.5), value: timerViewModel.isActive || timerViewModel.isBreakActive)
 
 					Button("Stop") {
 						timerViewModel.stopTimer()
@@ -37,6 +38,7 @@ struct ContentView: View {
 					.neumorphicButton()
 					.disabled(!timerViewModel.isActive && !timerViewModel.isBreakActive)
 					.opacity(!timerViewModel.isActive && !timerViewModel.isBreakActive ? 0.5 : 1)
+					.animation(.easeInOut(duration: 0.5), value: !timerViewModel.isActive || !timerViewModel.isBreakActive)
 
 				}
 				.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
