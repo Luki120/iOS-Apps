@@ -4,7 +4,7 @@ import SafariServices
 
 struct ContentView: View {
 
-	@AppStorage("sliderValue") private var sliderValue = 0.0
+	@AppStorage("sliderValue") private var sliderValue = 10.0
 
 	@Environment(\.colorScheme) private var colorScheme
 
@@ -26,18 +26,13 @@ struct ContentView: View {
 	var body: some View {
 
 		TabView {
-
 			NavigationView {
-
 				VStack {
-
 					VStack(spacing: 5) {
- 
-						AttributedLabelView(string: passwordText)
+ 						AttributedLabelView(string: passwordText)
 							.frame(width: 248.5, height: 26.5)
-							.transition(AnyTransition.opacity.animation(.easeInOut(duration: 0.5)))
+							.transition(.opacity.animation(.easeInOut(duration: 0.5)))
 							.id("passwordText" + passwordText)
-
 						Button("Regenerate password") {
 							passwordText = randomString(length: Int(sliderValue))
 						}
@@ -46,12 +41,9 @@ struct ContentView: View {
 						.onAppear {
 							passwordText = randomString(length: Int(sliderValue))
 						}
-
 						Button("Copy password") { UIPasteboard.general.string = passwordText }
 							.customButton()
-
 						HStack {
-
 							Slider(value: $sliderValue, in: 10...25, onEditingChanged: { _ in
 								passwordText = randomString(length: Int(sliderValue))
 							})
@@ -60,46 +52,31 @@ struct ContentView: View {
 							Text("\(sliderValue, specifier: "%.0f")")
 								.font(.system(size: 10))
 								.foregroundColor(.gray)
-
 						}
-
 					}
-
 					Spacer()
-
 				}
 				.toolbar {
-
 					ToolbarItem(placement: .navigationBarTrailing) {
-
 						HStack {
-
 							Text("")
-
 							Button { shouldShowSettingsSheet.toggle() }
-
 							label: { Image(systemName: "gear") }
 								.sheet(isPresented: $shouldShowSettingsSheet) { settingsView }
-
 						}
-
 					}
-
 				}
 				.navigationBarTitle("Aurora", displayMode: .inline)
 				.padding(20)
-
 			}
 			.navigationViewStyle(StackNavigationViewStyle())
 			.tabItem {
 				Image(systemName: "house.fill")
 					.font(.system(size: 22))
 			}
-
 			VaultView()
-
 		}
-		.accentColor(Color.auroraColor)
+		.accentColor(.auroraColor)
 
 	}
 
@@ -110,25 +87,20 @@ struct ContentView: View {
 	private var settingsView: some View {
 
 		VStack {
-
 			Form {
-
 				Section(header: Text("Settings")) {
 					Group {
 						Toggle("A-Z", isOn: $allowUppercaseCharacters)
 						Toggle("0-9", isOn: $allowNumberCharacters)
 						Toggle("!@#$%^&*", isOn: $allowSpecialCharacters)
 					}
-					.toggleStyle(SwitchToggleStyle(tint: Color.auroraColor))
+					.toggleStyle(SwitchToggleStyle(tint: .auroraColor))
 					.listRowBackground(colorScheme == .dark ? Color.black : Color.white)
 				}
 			}
 			.padding(.top, 22)
-
 			Section(footer: Text("")) {
-
 				VStack {
-
 					Button { shouldShowSafariSheet.toggle() }
 						label: { Text("Source Code") }
 							.font(.system(size: 15.5))
@@ -136,24 +108,21 @@ struct ContentView: View {
 							.sheet(isPresented: $shouldShowSafariSheet) {
 								SafariView(url: URL(string: kSourceCodeURL))
 							}
-
 					Text("2022 © Luki120")
 						.font(.system(size: 10))
 						.foregroundColor(.gray)
 						.padding(.top, 5)
 
 				}
-
 			}
 			.padding(.top, 10)
-
 		}
 		.background(colorScheme == .dark ? Color.black : Color.white)
+		.ignoresSafeArea()
 
 	}
 
 	private func randomString(length: Int) -> String {
-
  		var characters = "abcdefghijklmnopqrstuvwxyz"
 
 		let numbers = "0123456789"
@@ -168,11 +137,9 @@ struct ContentView: View {
 		}
 
 		return String((0..<length).map { _ in characters.randomElement() ?? "c" })
-
 	}
 
 }
-
 
 private struct SafariView: UIViewControllerRepresentable {
 
@@ -187,7 +154,6 @@ private struct SafariView: UIViewControllerRepresentable {
 	func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
 
 }
-
 
 private struct AttributedLabelView: UIViewRepresentable {
 
@@ -212,11 +178,11 @@ private struct AttributedLabelView: UIViewRepresentable {
 		)
 	}
 
-	// MARK: Attributed String
+	// ! Attributed String
 
-	private func findRangesInString(_ string: String, withPattern pattern: String) -> [NSRange] {
+	private func findRanges(inString string: String, withPattern pattern: String) -> [NSRange] {
 		let nsString = string as NSString
-		let regex = try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+		let regex = try? NSRegularExpression(pattern: pattern)
 		let matches = regex?.matches(in: string, options: .withoutAnchoringBounds, range: NSMakeRange(0, nsString.length))
 		return matches?.map { $0.range } ?? []
 	}
@@ -226,18 +192,14 @@ private struct AttributedLabelView: UIViewRepresentable {
 		numbersAttribute: [NSAttributedString.Key : Any],
 		symbolsAttribute: [NSAttributedString.Key : Any]
 	) -> NSAttributedString {
-
-		let symbolRanges = findRangesInString(string, withPattern: "[!@#$%^&*()_+-=\\[\\\\\\]{}|;':,./<>?`~]+")
-		let numberRanges = findRangesInString(string, withPattern: "[0-9]+")
+		let symbolRanges = findRanges(inString: string, withPattern: "[!@#$%^&*()_+-=\\[\\\\\\]{}|;':,./<>?`~]+")
+		let numberRanges = findRanges(inString: string, withPattern: "[0-9]+")
 
 		let attributedString = NSMutableAttributedString(string: string)
 
-		for range in symbolRanges {
-			attributedString.addAttributes(symbolsAttribute, range: range)
-		}
-		for range in numberRanges {
-			attributedString.addAttributes(numbersAttribute, range: range)
-		}
+		for range in symbolRanges { attributedString.addAttributes(symbolsAttribute, range: range) }
+		for range in numberRanges { attributedString.addAttributes(numbersAttribute, range: range) }
+
 		return attributedString
 	}
 

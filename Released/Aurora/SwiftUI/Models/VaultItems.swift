@@ -1,7 +1,7 @@
 import SwiftUI
 
 
-class VaultItems: Identifiable, Codable {
+final class VaultItems: Codable, Identifiable {
 
 	var id = UUID()
 	var name = ""
@@ -10,8 +10,7 @@ class VaultItems: Identifiable, Codable {
 
 }
 
-
-class VaultItemsViewModel: ObservableObject {
+final class VaultItemsViewModel: ObservableObject {
 
 	static let sharedInstance = VaultItemsViewModel()
 
@@ -28,9 +27,7 @@ class VaultItemsViewModel: ObservableObject {
 	}
 
 	private func saveData() {
-		guard let encodedData = try? JSONEncoder().encode(vaultItems) else {
-			return
-		}
+		guard let encodedData = try? JSONEncoder().encode(vaultItems) else { return }
 		UserDefaults.standard.set(encodedData, forKey: "savedItems")
 	}
 

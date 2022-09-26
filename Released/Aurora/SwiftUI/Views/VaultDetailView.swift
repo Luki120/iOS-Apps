@@ -14,19 +14,14 @@ struct VaultDetailView: View {
 	var body: some View {
 
 		VStack {
-
 			Form {
-
 				Group {
-
 					Text("Name: \(vaultItem.name)")
 					Text("Username: \(vaultItem.username)")
 					Text("Password: \(isSecured ? "••••••••" : vaultItem.password)")
-
 				}
 				.font(.headline)
 				.listRowBackground(colorScheme == .dark ? Color.black : Color.white)
-
 			}
 			.disabled(true)
 			.padding(.top, -20)
@@ -37,7 +32,7 @@ struct VaultDetailView: View {
 					.font(.system(size: 18))
 					.frame(width: 100, height: 40)
 					.background(Color.auroraColor)
-					.transition(AnyTransition.opacity.combined(with: .scale))
+					.transition(.opacity.combined(with: .scale))
 					.clipShape(Capsule(style: .continuous))
  					.onAppear {
 						DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
@@ -48,38 +43,28 @@ struct VaultDetailView: View {
 					}
 
 			}
-
 		}
 		.padding()
 		.navigationBarTitle(Text(vaultItem.name), displayMode: .inline)
 		.toolbar {
-
 			ToolbarItem(placement: .navigationBarTrailing) {
-
 				HStack {
-
-					Button(action: {
-
+					Button {
 						isSecured.toggle()
-
-					}) { Image(systemName: isSecured ? "eye.slash.fill" : "eye.fill") }
-
-					Button(action: {
-
+					} label: {
+						Image(systemName: isSecured ? "eye.slash.fill" : "eye.fill")
+					}
+					Button {
 						withAnimation(.easeInOut(duration: 0.5)) {
 							shouldShowToast.toggle()
 						}
 						UIPasteboard.general.string = vaultItem.password
-
-					}) {
+					} label: {
 						Image(systemName: "paperclip")
 							.font(.system(size: 20))
 					}
-
 				}
-
 			}
-
 		}
 
 	}

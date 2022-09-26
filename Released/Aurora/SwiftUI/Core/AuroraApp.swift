@@ -2,8 +2,7 @@ import SwiftUI
 
 
 @main
-struct Aurora: App {
-
+struct AuroraApp: App {
 	var body: some Scene {
 		WindowGroup {
 			ContentView()
