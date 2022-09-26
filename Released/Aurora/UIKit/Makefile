@@ -1,10 +1,9 @@
-ARCHS = arm64 arm64e
-TARGET = iphone:clang:latest:latest
+ARCHS = arm64
+TARGET = iphone:clang:latest:14.0
 INSTALL_TARGET_PROCESSES = Aurora
-
 APPLICATION_NAME = Aurora
 
-Aurora_FILES = Core/AppDelegate.swift Controllers/AuroraRootVC.swift Controllers/AuroraVC.swift Controllers/SettingsVC.swift
+Aurora_FILES = $(wildcard **/*.swift)
 Aurora_FRAMEWORKS = UIKit CoreGraphics
 
 include $(THEOS)/makefiles/common.mk
