@@ -6,6 +6,5 @@ Description: See your device's uptime in less clicks
 Maintainer: Luki
 Author: Luki
 Section: Utilities
-Depends: ${LIBSWIFT}
 Depiction: https://luki120.github.io/depictions/web/?p=me.luki.cora
 SileoDepiction: https://luki120.github.io/depictions/native/me.luki.cora/depiction.json

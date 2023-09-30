@@ -6,6 +6,5 @@ Description: An awesome vanilla password manager (kinda)
 Maintainer: Luki
 Author: Luki
 Section: Utilities
-Depends: ${LIBSWIFT}
 Depiction: https://luki120.github.io/depictions/web/?p=me.luki.aurora
 SileoDepiction: https://luki120.github.io/depictions/native/me.luki.aurora/depiction.json

@@ -6,4 +6,3 @@ Description: See your device's uptime and information in less clicks
 Maintainer: Luki
 Author: Luki
 Section: Utilities
-Depends: ${LIBSWIFT}
