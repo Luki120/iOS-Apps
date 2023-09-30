@@ -27,9 +27,9 @@ struct AddVaultItemView: View {
 							FocusStateView(name: $name, username: $username, password: $password)
 						}
 						else {
-							createKitTextField(withTag: 0, placeholder: "Name", returnKeyType: .next, text: $name)
-							createKitTextField(withTag: 1, placeholder: "Username", returnKeyType: .next, text: $username)
-							createKitTextField(withTag: 2, placeholder: "Password", returnKeyType: .done, text: $password)
+							KitTextField(withTag: 0, placeholder: "Name", returnKeyType: .next, text: $name)
+							KitTextField(withTag: 1, placeholder: "Username", returnKeyType: .next, text: $username)
+							KitTextField(withTag: 2, placeholder: "Password", returnKeyType: .done, text: $password)
 						}
  					}
 					.listRowBackground(colorScheme == .dark ? Color.black : Color.white)
@@ -56,7 +56,7 @@ struct AddVaultItemView: View {
 	}
 
 	@ViewBuilder
-	private func createKitTextField(
+	private func KitTextField(
 		withTag tag: Int,
 		placeholder: String,
 		returnKeyType: UIReturnKeyType,
