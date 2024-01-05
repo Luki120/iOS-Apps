@@ -59,8 +59,7 @@ final class TimerViewModel: ObservableObject {
 		seconds = totalSeconds % 60
 		timerString = "\(min):\(seconds < 10 ? "0" : "")\(seconds)"
 
-		guard isInBreak else { return }
- 		guard min == 0 && seconds == 0 else { return }
+		guard isInBreak, min == 0 && seconds == 0 else { return }
 
 		isActive = false
 		isBreakActive = false

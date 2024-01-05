@@ -17,7 +17,7 @@ struct ContentView: View {
 				.font(.custom("Avenir Next", size: 20))
 				.fontWeight(.semibold)
 				.foregroundColor(.gray)
-				.padding(20)
+				.padding(topSafeArea - 10)
 
 			GeometryReader { _ in
 
@@ -231,5 +231,8 @@ private extension View {
 	}
 	var rootVC: UIViewController {
 		UIApplication.shared.windows.first?.rootViewController ?? UIViewController()
+	}
+	var topSafeArea: CGFloat {
+		UIApplication.shared.windows.first?.safeAreaInsets.top ?? 0
 	}
 }
